@@ -1,0 +1,195 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #a6c8cb;
+  min-height: 8vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  border-bottom: 2px solid rgb(104, 104, 104);
+  
+}
+
+
+.App-load {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  border-bottom: 5px solid black;
+}
+.horiLine{
+  width:90vw;
+  border-top: 1px solid rgb(174, 174, 174);
+  border-bottom: 1px solid rgb(174, 174, 174);
+}
+
+.vertLine{
+  width:0.1px;
+  height:40vh;
+  border: 1px solid rgb(174, 174, 174);
+}
+.App-body {
+  background-color: #e5c0c0;
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.containerUpper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 46vh;
+  width: 100%;
+  flex-direction: row;
+}
+.containerContact {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  min-height: 46vh;
+  width: 100%;
+}
+
+.box {
+  flex: 1;
+  
+}
+.boxContact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+  padding-top: 20px; 
+}
+
+
+
+.chart-container {
+  width: 80%; /* Adjust the width as needed */
+  max-width: 600px; /* Set a maximum width if desired */
+  min-height: 40vh;
+  margin: 0 auto; /* Center the chart container horizontally */
+  padding: 20px; /* Add some padding around the chart */
+  border: 1px solid #ccc; /* Add a border around the chart container */
+  border-radius: 5px; /* Round the corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle box shadow */
+  background-color: #fff; /* Set the background color */
+}
+
+.graph-div {
+  padding-bottom: 20px;
+}
+
+
+
+
+
+.list-item {
+  color: black; /* Change the color to your desired color */
+  /* Add other styles as needed */
+}
+/* Style the scrollbar track */
+.tags::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar track */
+  
+}
+
+/* Style the scrollbar thumb (the draggable part) */
+.tags::-webkit-scrollbar-thumb {
+  background: #888; /* Background color of the thumb */
+  border-bottom-right-radius: 5px; /* Rounded corners */
+  border-bottom-left-radius: 5px;
+}
+
+/* Style the scrollbar track when the user hovers over it */
+.tags::-webkit-scrollbar-track:hover {
+  background: #aaa;
+  border-bottom-right-radius: 5px; /* Rounded corners */
+  border-bottom-left-radius: 5px;
+  
+}
+
+/* Style for the contact lists */
+.tags {
+  width: 400px; /* Adjust width as needed */
+  height: 300px; /* Set a fixed height */
+  overflow: auto;
+  border: 1px solid #ccc; /* Add borders or other styles as needed */
+  background-color: #fff;
+  color: black;
+  font-size: 20px;
+  border: 1px solid #ccc; /* Add a border around the chart container */
+  border-bottom-right-radius: 5px; /* Round the corners */
+  border-bottom-left-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tags h3 {
+  background-color: #a6c8cb; /* Background color for the section title */
+  padding: 8px;
+  margin: 0;
+  font-size: 20px;
+  color: black;
+}
+
+.spacer{
+  padding: 30px;
+}
+
+.boxContact h3 {
+  background-color: #a6c8cb;
+  padding: 8px;
+  margin: 0;
+  font-size: 20px;
+  color: black;
+  border: 1px solid #ccc; /* Add a border around the chart container */
+  border-top-right-radius: 5px; /* Round the corners */
+  border-top-left-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
