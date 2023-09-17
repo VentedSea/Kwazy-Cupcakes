@@ -157,8 +157,8 @@
 
 /* Style for the contact lists */
 .tags {
-  width: 400px; /* Adjust width as needed */
-  height: 300px; /* Set a fixed height */
+  width: 25vw; /* Adjust width as needed */
+  height: 40vh; /* Set a fixed height */
   overflow: auto;
   border: 1px solid #ccc; /* Add borders or other styles as needed */
   background-color: #fff;
