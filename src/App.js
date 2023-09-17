@@ -70,6 +70,8 @@ function App() {
   const [jsonInvoice, setJsonInvoice] = useState([]);
   const [refreshCon, setRefreshCon] = useState(false);
   const [refreshInv, setRefreshInv] = useState(false);
+  const [jsonPayment, setJsonPayment] = useState([]);
+  const [refreshPay, setRefreshPay] = useState(false);
 
   function handleClickContacts() {
     const url = 'https://hackathon.syftanalytics.com/api/contacts';
@@ -152,6 +154,7 @@ function App() {
       .then(data => console.log(data))
       .catch(error => console.error("Error:", error));
   }
+  //contacts
   useEffect(() => {
     const url = 'https://hackathon.syftanalytics.com/api/contacts';
     const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
@@ -178,7 +181,7 @@ function App() {
       //console.log("set to true");
       setRefreshCon(true);
       
-      console.log('jsonContact[data]',jsonContact['data']);;
+      //console.log('jsonContact[data]',jsonContact['data']);;
     }
      
   }, [jsonContact]);
@@ -209,10 +212,41 @@ function App() {
     if (!Array.isArray(jsonInvoice)){
       //console.log("set to true");
       setRefreshInv(true);
-      console.log('json[data]',jsonInvoice['data']);;
+      //console.log('json[data]',jsonInvoice['data']);;
     }
      
   }, [jsonInvoice]);
+
+  //payments
+  useEffect(() => {
+    const url = 'https://hackathon.syftanalytics.com/api/payment';
+    const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+
+    const headers = {
+      'x-api-key': apiKey
+    };
+
+    fetch(url, { headers })
+      .then(response => response.json())
+      .then(data => {
+        //console.log(data);
+        setJsonPayment(data);
+        //
+      })
+      .catch(error => console.error("Error:", error));
+  }, []); // Empty dependency array to run this effect only once
+
+  useEffect(() => {
+    //console.log('json',jsonContact); // This will log the updated state
+    
+    //console.log('!isArray',!Array.isArray(jsonContact))
+    if (!Array.isArray(jsonPayment)){
+      //console.log("set to true");
+      setRefreshPay(true);
+      //console.log('jsonpayment[data]',jsonPayment['data']);;
+    }
+     
+  }, [jsonPayment]);
 
 
   const groupInvoicesByMonth = () => {
@@ -238,9 +272,33 @@ function App() {
     return groupedData;
   };
 
+  //Payments
+  const groupPaymentsByMonth = () => {
+    const monthTotals = {};
+
+    jsonPayment['data'].forEach((payment) => {
+      const dueDate = new Date(payment.date);
+      const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+      const total = parseFloat(payment.total);
+
+      if (monthTotals[monthYear]) {
+        monthTotals[monthYear].total += total;
+      } else {
+        monthTotals[monthYear] = {
+          monthYear,
+          total,
+        };
+      }
+    });
+
+    // Convert the grouped data object to an array
+    const groupedData = Object.values(monthTotals);
+    return groupedData;
+  };
+
   
 
-  if (refreshCon==false || refreshInv==false){
+  if (refreshCon==false || refreshInv==false || refreshPay==false){
     
     return(
       <div className="App" >
@@ -254,7 +312,8 @@ function App() {
 
   else{
     const groupedInvoices = groupInvoicesByMonth();
-    console.log(groupedInvoices);
+    const groupedPayments = groupPaymentsByMonth();
+    //console.log(groupedInvoices);
 
     const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
       const [aMonth, aYear] = a.monthYear.split('-');
@@ -268,7 +327,22 @@ function App() {
       // If years are the same, compare months
       return aMonth - bMonth;
     });
-    console.log(sortedGroupedInvoices)
+    //console.log(sortedGroupedInvoices)
+
+    const sortedGroupedPayments = groupedPayments.sort((a, b) => {
+      const [aMonth, aYear] = a.monthYear.split('-');
+      const [bMonth, bYear] = b.monthYear.split('-');
+      
+      // Compare years first
+      if (aYear !== bYear) {
+        return aYear - bYear;
+      }
+      
+      // If years are the same, compare months
+      return aMonth - bMonth;
+    });
+    //console.log('sortedGroupedPayments',sortedGroupedPayments)
+
     const customers = jsonContact['data'].filter(contact => contact.is_customer);
     const suppliers = jsonContact['data'].filter(contact => contact.is_supplier);
     const others = jsonContact['data'].filter(contact => !contact.is_customer && !contact.is_supplier);
@@ -277,27 +351,31 @@ function App() {
       <div className="App" >
         <title>This App</title>
         <header className="App-header">
-          <p>J's Cupcakes</p>
+          <h1>J's Cupcakes</h1>
         </header>
         <body className="App-body">
           <div className="containerUpper">
+            <h1>Dashboard</h1>
             <div className="container">
 
-              <div className="box">
-              <img src={"https://i.kym-cdn.com/entries/icons/facebook/000/018/666/fellowkids.jpg"}  alt="logo" width="400"/>
+            <div className="box">
+                <h2>Monthly Invoices Totals</h2>
+                <div className="graph-div">
+                  <LineChart   data={sortedGroupedInvoices} />
+                  </div>
               </div>
 
               <div className="box">
-              <button onClick={handleClickContacts}>Contacts</button>
-              <button onClick={handleClickItems}>items</button>
-              <button onClick={handleClickInvoice}>invoice</button>
-              <button onClick={handleClickInvoiceLines}>invoice-lines</button>
-              <button onClick={handleClickPayments}>payments</button>
-              <button onClick={handleClickPaymentAllocations}>payment allocations</button>
-              
-                <h1>Monthly Invoice Totals</h1>
+                {//<button onClick={handleClickContacts}>Contacts</button>
+                //<button onClick={handleClickItems}>items</button>
+                //<button onClick={handleClickInvoice}>invoice</button>
+                //<button onClick={handleClickInvoiceLines}>invoice-lines</button>
+                //<button onClick={handleClickPayments}>payments</button>
+                //<button onClick={handleClickPaymentAllocations}>payment allocations</button>
+              }
+                <h2>Monthly Payments Totals</h2>
                 <div className="graph-div">
-                  <LineChart   data={sortedGroupedInvoices} />
+                  <LineChart   data={sortedGroupedPayments} />
                   </div>
               </div>
             </div>
