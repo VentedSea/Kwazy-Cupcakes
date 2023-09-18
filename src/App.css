@@ -28,7 +28,7 @@
 
 
 .App-load {
-  background-color: #282c34;
+  background-color: #a6c8cb;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -104,7 +104,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 40px;
+  padding-bottom: 10px;
   padding-top: 20px; 
 }
 
@@ -158,6 +158,20 @@
 /* Style for the contact lists */
 .tags {
   width: 25vw; /* Adjust width as needed */
+  height: 40vh; /* Set a fixed height */
+  overflow: auto;
+  border: 1px solid #ccc; /* Add borders or other styles as needed */
+  background-color: #fff;
+  color: black;
+  font-size: 20px;
+  border: 1px solid #ccc; /* Add a border around the chart container */
+  border-bottom-right-radius: 5px; /* Round the corners */
+  border-bottom-left-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.invtags {
+  width: 50vw; /* Adjust width as needed */
   height: 40vh; /* Set a fixed height */
   overflow: auto;
   border: 1px solid #ccc; /* Add borders or other styles as needed */

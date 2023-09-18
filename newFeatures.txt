@@ -1,0 +1,15 @@
+Feature:                    Need:
+
+add items                   new database
+add inv
+add pay
+add contact
+
+filter graphs by time       current
+
+auth0
+env variable
+google run
+
+inv and pay for each contact
+

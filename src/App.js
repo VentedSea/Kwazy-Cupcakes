@@ -72,6 +72,11 @@ function App() {
   const [refreshInv, setRefreshInv] = useState(false);
   const [jsonPayment, setJsonPayment] = useState([]);
   const [refreshPay, setRefreshPay] = useState(false);
+  const [jsonItem, setJsonItem] = useState([]);
+  const [refreshItem, setRefreshItem] = useState(false);
+
+  const [totalInv, setTotalInv] = useState([0]);
+  const [totalPay, setTotalPay] = useState([0]);
 
   function handleClickContacts() {
     const url = 'https://hackathon.syftanalytics.com/api/contacts';
@@ -248,15 +253,49 @@ function App() {
      
   }, [jsonPayment]);
 
+  useEffect(() => {
+    const url = 'https://hackathon.syftanalytics.com/api/item';
+    const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
 
+    const headers = {
+      'x-api-key': apiKey
+    };
+
+    fetch(url, { headers })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setJsonItem(data);
+        //
+      })
+      .catch(error => console.error("Error:", error));
+  }, []); // Empty dependency array to run this effect only once
+
+  useEffect(() => {
+    //console.log('json',jsonContact); // This will log the updated state
+    
+    //console.log('!isArray',!Array.isArray(jsonContact))
+    if (!Array.isArray(jsonItem)){
+      console.log("set to true");
+      setRefreshItem(true);
+      //console.log('jsonpayment[data]',jsonPayment['data']);;
+    }
+     
+  }, [jsonItem]);
+
+  
   const groupInvoicesByMonth = () => {
     const monthTotals = {};
-
+    var totalinv=0;
     jsonInvoice['data'].forEach((invoice) => {
       const dueDate = new Date(invoice.due_date);
       const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-      const total = parseFloat(invoice.total);
-
+      const exchange = parseFloat(invoice.exchange_rate);
+      const total = parseFloat(invoice.total)/exchange;
+      //console.log('invoice.total:',invoice.total);
+      //console.log('invoice.exchange_rate:',invoice.exchange_rate);
+      //console.log('total:',total);
+      totalinv+=total;
       if (monthTotals[monthYear]) {
         monthTotals[monthYear].total += total;
       } else {
@@ -266,21 +305,23 @@ function App() {
         };
       }
     });
-
     // Convert the grouped data object to an array
     const groupedData = Object.values(monthTotals);
-    return groupedData;
+    //setTotalInv(totalinv);
+    return [groupedData,totalinv];
   };
 
   //Payments
   const groupPaymentsByMonth = () => {
     const monthTotals = {};
-
+    var totalpay=0;
+    //console.log(jsonPayment['data'])
     jsonPayment['data'].forEach((payment) => {
       const dueDate = new Date(payment.date);
       const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-      const total = parseFloat(payment.total);
-
+      const exchange = parseFloat(payment.exchange_rate);
+      const total = parseFloat(payment.total)/exchange; 
+      totalpay+=total;
       if (monthTotals[monthYear]) {
         monthTotals[monthYear].total += total;
       } else {
@@ -293,12 +334,13 @@ function App() {
 
     // Convert the grouped data object to an array
     const groupedData = Object.values(monthTotals);
-    return groupedData;
+    //setTotalPay(totalpay);
+    return [groupedData,totalpay];
   };
 
   
 
-  if (refreshCon==false || refreshInv==false || refreshPay==false){
+  if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false){
     
     return(
       <div className="App" >
@@ -311,8 +353,12 @@ function App() {
   }
 
   else{
-    const groupedInvoices = groupInvoicesByMonth();
-    const groupedPayments = groupPaymentsByMonth();
+    const getInvData=groupInvoicesByMonth();
+    const groupedInvoices = getInvData[0];
+    const finalInvTotal=getInvData[1];
+    const getPayData=groupPaymentsByMonth();
+    const groupedPayments = getPayData[0];
+    const finalPayTotal=getPayData[1];
     //console.log(groupedInvoices);
 
     const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
@@ -347,10 +393,19 @@ function App() {
     const suppliers = jsonContact['data'].filter(contact => contact.is_supplier);
     const others = jsonContact['data'].filter(contact => !contact.is_customer && !contact.is_supplier);
 
+    const Items = jsonItem['data'];
+    const listInvoices=jsonInvoice['data'];
+
     return (
       <div className="App" >
         <title>This App</title>
         <header className="App-header">
+        <button onClick={handleClickContacts}>Contacts</button>
+        <button onClick={handleClickItems}>items</button>
+        <button onClick={handleClickInvoice}>invoice</button>
+        <button onClick={handleClickInvoiceLines}>invoice-lines</button>
+        <button onClick={handleClickPayments}>payments</button>
+        <button onClick={handleClickPaymentAllocations}>payment allocations</button>
           <h1>J's Cupcakes</h1>
         </header>
         <body className="App-body">
@@ -358,13 +413,14 @@ function App() {
             <h1>Dashboard</h1>
             <div className="container">
 
-            <div className="box">
-                <h2>Monthly Invoices Totals</h2>
+              <div className="box">
+                <h2>Monthly Invoice Totals</h2>
+                <p>Total Invoices: {Math.round(finalInvTotal)}</p>
                 <div className="graph-div">
                   <LineChart   data={sortedGroupedInvoices} />
                   </div>
               </div>
-
+              
               <div className="box">
                 {//<button onClick={handleClickContacts}>Contacts</button>
                 //<button onClick={handleClickItems}>items</button>
@@ -372,14 +428,41 @@ function App() {
                 //<button onClick={handleClickInvoiceLines}>invoice-lines</button>
                 //<button onClick={handleClickPayments}>payments</button>
                 //<button onClick={handleClickPaymentAllocations}>payment allocations</button>
-              }
+                }
                 <h2>Monthly Payments Totals</h2>
+                <p>Total Payments: {Math.round(finalPayTotal)}</p>
                 <div className="graph-div">
                   <LineChart   data={sortedGroupedPayments} />
-                  </div>
+                </div>
               </div>
             </div>
             <hr className="horiLine"></hr>
+            <div className="boxContact">
+              <div className="spacer">
+                <h3>Invoices</h3>
+                <div className="invtags">
+                  <ul>
+                    {listInvoices.map((list) => (
+                      <li >{list.contact_id}     {Math.round(list.total)}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <hr className="horiLine"></hr> 
+            <div className="boxContact">
+              <div className="spacer">
+                <h3>Products</h3>
+                <div className="tags">
+                  <ul>
+                    {Items.map((item) => (
+                      <li key={item.id}>{item.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <hr className="horiLine"></hr>            
             <div className="boxContact">
               <div className="spacer">
                 <h3>Customer Contacts</h3>
