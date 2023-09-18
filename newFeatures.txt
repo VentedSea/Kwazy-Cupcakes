@@ -11,5 +11,5 @@ auth0
 env variable
 google run
 
-inv and pay for each contact
+pay for each contact
 

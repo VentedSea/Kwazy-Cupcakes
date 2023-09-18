@@ -25,6 +25,142 @@ ChartJS.register(
   Legend
 );
 
+
+function CustomerList({ invoiceDictionary, customerIds }) {
+  
+
+
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [isListExpanded, setListExpanded] = useState(false);
+
+  const handleCustomerSelect = (customerId) => {
+    if (selectedCustomers.includes(customerId)) {
+      // If the customer is already selected, remove them
+      setSelectedCustomers(selectedCustomers.filter((id) => id !== customerId));
+    } else {
+      // Otherwise, add the customer to the selected list
+      setSelectedCustomers([...selectedCustomers, customerId]);
+    }
+  };
+  const toggleList = () => {
+    setListExpanded(!isListExpanded);
+  };
+
+  const formatCurrency = (amount) => {
+    return parseFloat(amount).toFixed(2);
+  };
+
+  const calculateTotal = (customerId) => {
+    return invoiceDictionary[customerId].purchases.reduce(
+      (total, purchase) => total + parseFloat(purchase.amount),
+      0
+    );
+  };
+
+  return (
+    <div className="customerList">
+      <h2>Customer Sales List</h2>
+        <button onClick={toggleList}>
+          {isListExpanded ? '-' : '+'}
+        </button>
+      
+      {isListExpanded && (
+        <ul className="customerList">
+          {customerIds.map((customerId) => (
+            <div key={customerId} className="customer-list">
+              <h3 onClick={() => handleCustomerSelect(customerId)}>
+                {invoiceDictionary[customerId].name}
+              </h3>
+              {selectedCustomers.includes(customerId) && (
+                <ul className="purchase-list">
+                  <li className="purchase-header">
+                    <span>Date</span>
+                    <span>Amount</span>
+                  </li>
+                  {invoiceDictionary[customerId].purchases.map((purchase, index) => (
+                    <li key={index} className="purchase-item">
+                      <span className="purchase-date">{purchase.date}</span>
+                      <span className="purchase-amount">
+                        R{formatCurrency(purchase.amount)}
+                      </span>
+                    </li>
+                  ))}
+                  <li className="purchase-item">
+                    <span className="purchase-total-text">Total</span>
+                    <span className="purchase-total-num">R{formatCurrency(calculateTotal(customerId))}</span>
+                  </li>
+                </ul>
+              )}
+            </div>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function ItemList({ itemDictionary, itemIds }) {
+  
+
+
+  const [selectedItem, setSelectedItem] = useState([]);
+  const [isListExpanded, setListExpanded] = useState(false);
+
+  const handleCustomerSelect = (itemId) => {
+    if (selectedItem.includes(itemId)) {
+      // If the customer is already selected, remove them
+      setSelectedItem(selectedItem.filter((id) => id !== itemId));
+    } else {
+      // Otherwise, add the customer to the selected list
+      setSelectedItem([...selectedItem, itemId]);
+    }
+  };
+  const toggleList = () => {
+    setListExpanded(!isListExpanded);
+  };
+
+  const formatCurrency = (amount) => {
+    return parseFloat(amount).toFixed(2);
+  };
+
+  return (
+    <div className="customerList">
+      <h2>Item List</h2>
+        <button onClick={toggleList}>
+          {isListExpanded ? '-' : '+'}
+        </button>
+      
+      {isListExpanded && (
+        <ul className="customerList">
+          {itemIds.map((itemId) => (
+            <div key={itemId} className="customer-list">
+              <h3 onClick={() => handleCustomerSelect(itemId)}>
+                {itemDictionary[itemId].name}
+              </h3>
+              {selectedItem.includes(itemId) && (
+                <ul className="purchase-list">
+                  <li className="purchase-header">
+                    <span>Quantity</span>
+                    <span>Sale Price</span>
+                  </li>
+                  {itemDictionary[itemId].info.map((purchase, index) => (
+                    <li key={index} className="purchase-item">
+                      <span className="purchase-date">{purchase.quant}</span>
+                      <span className="purchase-amount">
+                        R{formatCurrency(purchase.cost)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 const LineChart = ({ data }) => {
   const chartData = {
     labels: data.map(item => item.monthYear),
@@ -62,6 +198,7 @@ const LineChart = ({ data }) => {
     </div>
   );
 };
+
 
 
 //<! --className="App-logo"!>
@@ -389,12 +526,81 @@ function App() {
     });
     //console.log('sortedGroupedPayments',sortedGroupedPayments)
 
+    function createInvoiceDictionary(customers, invoices) {
+      const invoiceDictionary = {};
+      var arrIds=[]
+      // Create a mapping of customer IDs to their names
+      const customerNameMap = {};
+      customers.forEach((customer) => {
+        customerNameMap[customer.id] = customer.name;
+      });
+    
+      // Group invoices by customer ID
+      invoices.forEach((invoice) => {
+        const customerId = invoice.contact_id;
+        const customerName = customerNameMap[customerId];
+        const dueDate = new Date(invoice.due_date);
+        const monthYear = `${dueDate.getDay() + 1}-${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+        const purchase = {
+          date: monthYear,
+          
+          amount: Math.round(invoice.total * 100) / 100,
+        };
+    
+        if (!invoiceDictionary[customerId]) {
+          invoiceDictionary[customerId] = { name: customerName, purchases: [] };
+          arrIds.push(customerId)
+        }
+    
+        invoiceDictionary[customerId].purchases.push(purchase);
+      });
+      //console.log('arrIds',arrIds)
+      return [invoiceDictionary,arrIds];
+    }
+    
+    function createItemDictionary(itemData) {
+      var arrItems=[]
+      const itemDictionary = {};
+    
+      // Group invoices by customer ID
+      itemData.forEach((item) => {
+        const itemId = item.id;
+        const itemName = item.name;
+        const itemQuant = item.quantity_on_hand;
+        const itemCost = item.sale_unit_price;
+        const itemInfo = {
+          quant: itemQuant,
+          
+          cost: itemCost,
+        };
+        
+        if (!itemDictionary[itemId]) {
+          itemDictionary[itemId] = { name: itemName, info: [] };
+          arrItems.push(itemId)
+        }
+    
+        itemDictionary[itemId].info.push(itemInfo);
+      });
+      //console.log('arrIds',arrItems);
+      //console.log(itemDictionary);
+      return [itemDictionary,arrItems];
+    }
+
     const customers = jsonContact['data'].filter(contact => contact.is_customer);
     const suppliers = jsonContact['data'].filter(contact => contact.is_supplier);
     const others = jsonContact['data'].filter(contact => !contact.is_customer && !contact.is_supplier);
 
     const Items = jsonItem['data'];
     const listInvoices=jsonInvoice['data'];
+
+    const getInvoiceDict = createInvoiceDictionary(jsonContact['data'], jsonInvoice['data']);
+    const invoiceDictionary=getInvoiceDict[0];
+    const customerIds=getInvoiceDict[1];
+
+    const getItemDict = createItemDictionary(Items);
+    const itemDictionary=getItemDict[0];
+    const itemIds=getItemDict[1];
+    //console.log('invoiceDictionary',invoiceDictionary); 
 
     return (
       <div className="App" >
@@ -438,29 +644,11 @@ function App() {
             </div>
             <hr className="horiLine"></hr>
             <div className="boxContact">
-              <div className="spacer">
-                <h3>Invoices</h3>
-                <div className="invtags">
-                  <ul>
-                    {listInvoices.map((list) => (
-                      <li >{list.contact_id}     {Math.round(list.total)}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <CustomerList invoiceDictionary={invoiceDictionary} customerIds={customerIds} />
             </div>
             <hr className="horiLine"></hr> 
             <div className="boxContact">
-              <div className="spacer">
-                <h3>Products</h3>
-                <div className="tags">
-                  <ul>
-                    {Items.map((item) => (
-                      <li key={item.id}>{item.name}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+            <ItemList itemDictionary={itemDictionary} itemIds={itemIds} />
             </div>
             <hr className="horiLine"></hr>            
             <div className="boxContact">

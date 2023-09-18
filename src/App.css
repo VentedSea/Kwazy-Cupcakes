@@ -207,3 +207,109 @@
   border-top-left-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.customerList{
+  background-color: white;
+  min-width: 700px;
+  color: black;
+  margin: 10px 0; /* Add some margin to separate customer lists */
+  padding: 10px;
+  border: 1px solid #ccc; /* Add a thin border around each customer list */
+  border-radius: 5px;
+}
+.customerList h2{
+  background-color: #a6c8cb;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.customerListText{
+  color: black;
+}
+
+.customerButton {
+  background-color: #3498db; /* Background color */
+  color: #ffffff; /* Text color */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Padding around the text */
+  cursor: pointer; /* Add a pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions for hover effects */
+}
+
+/* Style the button on hover */
+.button:hover {
+  background-color: #2980b9; /* Darker background color on hover */
+  transform: scale(1.05); /* Slightly increase button size on hover */
+}
+
+.purchase-list {
+  list-style-type: none;
+  padding: 0;
+  margin-left: 20px; /* Indent the purchase list */
+}
+
+.purchase-list li {
+  display: flex; /* Use flex layout for date and amount */
+   /* Space items evenly within the flex container */
+  margin-bottom: 5px; /* Add spacing between purchase items */
+}
+
+.purchase-date {
+  flex: 1; /* Allow date to expand and take available space */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.purchase-amount {
+  margin-left: 10px; /* Add spacing between date and amount */
+}
+.purchase-header-Date{
+  flex: 1; /* Allow date to expand and take available space */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.purchase-header-Amount{
+  flex: 1; /* Allow date to expand and take available space */
+  display: flex;
+  justify-content: flex-end;
+}
+.purchase-list {
+  list-style: none; /* Remove default list bullets */
+  margin: 0;
+  padding: 0;
+  padding-top: 10px; /* Add spacing between the customer name and purchase list */
+  border-top: 1px solid #ccc; /* Add a thin top border to separate from the customer name */
+}
+
+.purchase-header {
+  display: flex;
+  justify-content: space-between; /* Align labels at both ends of the header */
+  background-color: #e0e0e0; /* Set the background color for the header */
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc; /* Add a thin bottom border to separate from purchases */
+}
+
+.purchase-item {
+  display: flex;
+  justify-content: space-between; /* Align date and amount at both ends */
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc; /* Add a thin bottom border to separate items */
+}
+
+.purchase-total-text{
+  flex: 1; /* Allow date to expand and take available space */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.purchase-total-num{
+  flex: 1; /* Allow date to expand and take available space */
+  display: flex;
+  justify-content: flex-end;
+}
