@@ -1,0 +1,59 @@
+{
+  "code": 200,
+  "description": "Success",
+  "data": [
+    {
+      "payment_id": "70102124-498a-4b45-b3f5-232d687983e8",
+      "invoice_id": "fde9f6f3-5a3b-4b09-b219-0567329f1962",
+      "amount": 2254,
+      "date": "2022-09-15T00:00:00.000Z"
+    },
+    {
+      "payment_id": "70102124-498a-4b45-b3f5-232d687983e8",
+      "invoice_id": "2653d563-9a1b-4c86-98d2-9bff742b56e5",
+      "amount": 13825.35,
+      "date": "2022-09-15T00:00:00.000Z"
+    },
+    {
+      "payment_id": "70102124-498a-4b45-b3f5-232d687983e8",
+      "invoice_id": "29dd3e47-a834-4d93-95f9-055b7ff554cb",
+      "amount": 1725,
+      "date": "2023-02-14T00:00:00.000Z"
+    }
+  ]
+}
+
+{
+  "code": 200,
+  "description": "Success",
+  "data": [
+    {
+      "id": "70102124-498a-4b45-b3f5-232d687983e8",
+      "date": "2022-07-27T00:00:00.000Z",
+      "contact_id": "d7d2b5fc-32e7-4011-94a4-2c8aa0ff9e4f",
+      "total": 22312.5,
+      "exchange_rate": 1,
+      "is_income": true
+    }
+  ]
+}
+
+{
+  "code": 200,
+  "description": "Success",
+  "data": [
+    {
+      "id": "fde9f6f3-5a3b-4b09-b219-0567329f1962",
+      "issue_date": "2022-09-15T00:00:00.000Z",
+      "due_date": "2022-10-06T00:00:00.000Z",
+      "paid_date": "2022-09-15T00:00:00.000Z",
+      "paid": true,
+      "contact_id": "d7d2b5fc-32e7-4011-94a4-2c8aa0ff9e4f",
+      "total": 2254,
+      "amount_due": 0,
+      "exchange_rate": 1,
+      "currency": "GBP",
+      "is_sale": true
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-Feature:                    Need:
+Feature:                    Need:               When:
 
 add items                   new database
 add inv
@@ -7,9 +7,9 @@ add contact
 
 filter graphs by time       current
 
-auth0
+auth0                                       Wednesday
 env variable
-google run
+google run                                  Wednesday
 
 pay for each contact
 

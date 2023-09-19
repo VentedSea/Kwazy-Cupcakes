@@ -313,3 +313,68 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.AppLogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #a6c8cb; /* Set your desired background color */
+  font-family: Arial, sans-serif;
+  
+}
+
+.login-container {
+  background-color: #fff; /* Form background color */
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 300px; /* Adjust the width as needed */
+  margin: 0 auto; /* Center the form horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content vertically */
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+  background-color: #e5c0c0;
+  width: 100%;
+  
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 16px;
+  outline: none;
+}
+
+button[type="submit"] {
+  background-color: #007bff; /* Submit button background color */
+  color: #fff; /* Submit button text color */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3; /* Hover color for submit button */
+}
