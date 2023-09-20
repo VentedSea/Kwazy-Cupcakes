@@ -205,11 +205,13 @@ const LineChart = ({ data }) => {
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login, set_login] = useState(false);
+  const [login, set_login] = useState(true);
   const [error, setError] = useState(false);
   
   const [jsonContact, setJsonContact] = useState([]);
   const [jsonInvoice, setJsonInvoice] = useState([]);
+  const [jsonInvoiceLines, setJsonInvoiceLines] = useState([]);
+  const [refreshInvLines, setRefreshInvLines] = useState(false);
   const [refreshCon, setRefreshCon] = useState(false);
   const [refreshInv, setRefreshInv] = useState(false);
   const [jsonPayment, setJsonPayment] = useState([]);
@@ -222,13 +224,13 @@ function App() {
   const [totalInv, setTotalInv] = useState([0]);
   const [totalPay, setTotalPay] = useState([0]);
 
+  const [jsonAddData, setAddData] = useState([]);
+
       //contacts
       useEffect(() => {
-        const url = 'https://hackathon.syftanalytics.com/api/contacts';
-        const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+        const url = 'http://localhost:8080/new_contacts';
   
         const headers = {
-          'x-api-key': apiKey
         };
   
         fetch(url, { headers })
@@ -241,7 +243,7 @@ function App() {
           .catch(error => console.error("Error:", error));
       }, []); // Empty dependency array to run this effect only once
   
-      useEffect(() => {
+      useEffect(() => {//check contacts
         //console.log('json',jsonContact); // This will log the updated state
         
         //console.log('!isArray',!Array.isArray(jsonContact))
@@ -249,18 +251,16 @@ function App() {
           //console.log("set to true");
           setRefreshCon(true);
           
-          //console.log('jsonContact[data]',jsonContact['data']);;
+          //console.log('jsonContact[data]',jsonContact['body']);;
         }
         
       }, [jsonContact]);
   
   
-      useEffect(() => {
-        const url = 'https://hackathon.syftanalytics.com/api/invoice';
-        const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+      useEffect(() => {//get invoices
+        const url = 'http://localhost:8080/new_invoices';
   
         const headers = {
-          'x-api-key': apiKey
         };
   
         fetch(url, { headers })
@@ -273,25 +273,23 @@ function App() {
           .catch(error => console.error("Error:", error));
       }, []); // Empty dependency array to run this effect only once
   
-      useEffect(() => {
+      useEffect(() => {//check invoices
         //console.log('json',jsonContact); // This will log the updated state
         
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonInvoice)){
           //console.log("set to true");
           setRefreshInv(true);
-          //console.log('json[data]',jsonInvoice['data']);;
+          //console.log('json[data]',jsonInvoice['body']);;
         }
         
       }, [jsonInvoice]);
   
       //payments
       useEffect(() => {
-        const url = 'https://hackathon.syftanalytics.com/api/payment';
-        const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+        const url = 'http://localhost:8080/new_payments';
   
         const headers = {
-          'x-api-key': apiKey
         };
   
         fetch(url, { headers })
@@ -304,24 +302,22 @@ function App() {
           .catch(error => console.error("Error:", error));
       }, []); // Empty dependency array to run this effect only once
   
-      useEffect(() => {
+      useEffect(() => {//check payments
         //console.log('json',jsonContact); // This will log the updated state
         
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonPayment)){
           //console.log("set to true");
           setRefreshPay(true);
-          //console.log('jsonpayment[data]',jsonPayment['data']);;
+          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonPayment]);
   
-      useEffect(() => {
-        const url = 'https://hackathon.syftanalytics.com/api/item';
-        const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+      useEffect(() => {//get items
+        const url = 'http://localhost:8080/new_items';
   
         const headers = {
-          'x-api-key': apiKey
         };
   
         fetch(url, { headers })
@@ -334,24 +330,50 @@ function App() {
           .catch(error => console.error("Error:", error));
       }, []); // Empty dependency array to run this effect only once
   
-      useEffect(() => {
+      useEffect(() => {//check items
         //console.log('json',jsonContact); // This will log the updated state
         
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonItem)){
           console.log("set to true");
           setRefreshItem(true);
-          //console.log('jsonpayment[data]',jsonPayment['data']);;
+          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonItem]);
-  
-      useEffect(() => {
-        const url = 'https://hackathon.syftanalytics.com/api/payment-allocations';
-        const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
+
+      useEffect(() => {//get invoice lines
+        const url = 'http://localhost:8080/new_invoice_lines';
   
         const headers = {
-          'x-api-key': apiKey
+        };
+  
+        fetch(url, { headers })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            setJsonInvoiceLines(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+      }, []); // Empty dependency array to run this effect only once
+      
+      useEffect(() => {//check items
+        //console.log('json',jsonContact); // This will log the updated state
+        
+        //console.log('!isArray',!Array.isArray(jsonContact))
+        if (!Array.isArray(jsonInvoiceLines)){
+          console.log("set to true");
+          setRefreshInvLines(true);
+          //console.log('jsonpayment[data]',jsonPayment['body']);;
+        }
+        
+      }, [jsonInvoiceLines]);
+
+      useEffect(() => {
+        const url = 'http://localhost:8080/new_payment_allocations';
+  
+        const headers = {
         };
   
         fetch(url, { headers })
@@ -371,10 +393,12 @@ function App() {
         if (!Array.isArray(jsonAlloc)){
           //console.log("set to true");
           setRefreshAlloc(true);
-          //console.log('jsonpayment[data]',jsonPayment['data']);;
+          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonAlloc]);
+
+
 
 
   if (login == false){
@@ -436,90 +460,170 @@ function App() {
   else{
     
 
+    function handleClickContactsAll() {
+      console.log('jsonContact["body"].length',jsonContact['body'].length);
+      console.log(jsonContact['body'][0]['id']);
+      console.log(jsonContact['body']);
+      for (let i=1;i<jsonContact['body'].length;i++){
+        //console.log(i)
+        let id=jsonContact['body'][i]['id'];
+        let is_customer=jsonContact['body'][i]['is_customer'];
+        let is_supplier=jsonContact['body'][i]['is_supplier'];
+        let name=jsonContact['body'][i]['name'];
+
+        const url = 'http://localhost:8080/add_contact';
+
+      const headers = {
+        'id':id,
+        'is_customer':is_customer,
+        'is_supplier':is_supplier,
+        'name':name,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+
+      }
+    }
+
+    function handleClickItemsAll() {
+      //console.log('jsonContact["body"].length',jsonContact['body'].length);
+      //console.log(jsonContact['body'][0]['id']);
+      //console.log(jsonContact['body']);
+      for (let i=0;i<jsonItem['body'].length;i++){
+        //console.log(i)
+        let id=jsonItem['body'][i]['id'];
+        let name=jsonItem['body'][i]['name'];
+        let purchase_unit_price=jsonItem['body'][i]['purchase_unit_price'];
+        let quantity_on_hand=jsonItem['body'][i]['quantity_on_hand'];
+        let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
+        
+
+        const url = 'http://localhost:8080/add_item';
+
+        const headers = {
+          'id':id,
+          'name':name,
+          'purchase_unit_price':purchase_unit_price,
+          'quantity_on_hand':quantity_on_hand,
+          'sale_unit_price':sale_unit_price,
+        };
+
+        fetch(url, {headers })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error("Error:", error));
+
+        }
+      }
+    function handleClickInvoiceAll() {
+      
+      console.log(jsonInvoice['body'][0]);
+      for (let i=0;i<jsonInvoice['body'].length;i++){
+        //console.log(i)
+        let id=jsonInvoice['body'][i]['id'];
+        let amount_due=jsonInvoice['body'][i]['amount_due'];
+        let contact_id=jsonInvoice['body'][i]['contact_id'];
+        let currency=jsonInvoice['body'][i]['currency'];
+        let due_date=jsonInvoice['body'][i]['due_date'];
+        let exchange_rate=jsonInvoice['body'][i]['exchange_rate'];
+        let is_sale=jsonInvoice['body'][i]['is_sale'];
+        let issue_date=jsonInvoice['body'][i]['issue_date'];
+        let paid=jsonInvoice['body'][i]['paid'];
+        let paid_date=jsonInvoice['body'][i]['paid_date'];
+        let total=jsonInvoice['body'][i]['total'];
+        
+
+        const url = 'http://localhost:8080/add_invoice';
+
+        const headers = {
+          'id':id,
+          'amount_due':amount_due,
+          'contact_id':contact_id,
+          'currency':currency,
+          'due_date':due_date,
+          'exchange_rate':exchange_rate,
+          'is_sale':is_sale,
+          'issue_date':issue_date,
+          'paid':paid,
+          'paid_date':paid_date,
+          'total':total,
+        };
+
+        fetch(url, {headers })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error("Error:", error));
+
+        }
+        console.log('jsonInvoice["body"].length',jsonInvoice['body'].length);
+    }
+
+    function handleClickInvoiceLinesAll() {
+      console.log('jsonInvoiceLines["body"]:',jsonInvoiceLines['body'])
+    }
+    function handleClickPaymentsAll() {
+      for (let i=0;i<jsonPayment['body'].length;i++){
+        //console.log(i)
+        let id=jsonPayment['body'][i]['id'];
+        let contact_id=jsonPayment['body'][i]['contact_id'];
+        let date=jsonPayment['body'][i]['date'];
+        let exchange_rate=jsonPayment['body'][i]['exchange_rate'];
+        let is_income=jsonPayment['body'][i]['is_income'];
+        let total=jsonPayment['body'][i]['total'];
+        
+
+        const url = 'http://localhost:8080/add_payment';
+
+        const headers = {
+          'id':id,
+          'contact_id':contact_id,
+          'payment_date':date,
+          'exchange_rate':exchange_rate,
+          'is_income':is_income,
+          'total':total,
+        };
+
+        fetch(url, {headers })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error("Error:", error));
+
+        }
+        console.log('jsonPayment["data"]',jsonPayment['body']);
+    }
+    function handleClickPaymentAllocationsAll() {
+      for (let i=0;i<jsonAlloc['body'].length;i++){
+        //console.log(i)
+        let id=jsonAlloc['body'][i]['invoice_id'];
+        let pay_id=jsonAlloc['body'][i]['payment_id'];
+        let date=jsonAlloc['body'][i]['date'];
+        let amount=jsonAlloc['body'][i]['amount'];
+        
+
+        const url = 'http://localhost:8080/add_payment_allocation';
+
+        const headers = {
+          'id':id,
+          'pay_id':pay_id,
+          'payment_date':date,
+          'amount':amount,
+        };
+
+        fetch(url, {headers })
+          .then(response => response.json())
+          .then(data =>{if(data['status']==500){console.log(data)}} )
+          .catch(error => console.error("Error:", error));
+
+        }
+        // console.log('jsonAlloc["data"].length',jsonAlloc['body'].length);
+        // console.log('jsonAlloc["data"]',jsonAlloc['body']);
+        // console.log('jsonInvoices["data"]',jsonInvoice['body']);
+    }
     function handleClickContacts() {
-      const url = 'https://hackathon.syftanalytics.com/api/contacts';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        //.then(data => setJsonData(data))
-        .catch(error => console.error("Error:", error));
-    }
-
-    function handleClickItems() {
-      const url = 'https://hackathon.syftanalytics.com/api/item';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-    }
-    function handleClickInvoice() {
-      const url = 'https://hackathon.syftanalytics.com/api/invoice';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-    }
-
-    function handleClickInvoiceLines() {
-      const url = 'https://hackathon.syftanalytics.com/api/invoice-lines';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-    }
-    function handleClickPayments() {
-      const url = 'https://hackathon.syftanalytics.com/api/payment';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-    }
-    function handleClickPaymentAllocations() {
-      const url = 'https://hackathon.syftanalytics.com/api/payment-allocations';
-      const apiKey = "e6506999-8738-4866-a13f-2a2cfb14ba99";
-
-      const headers = {
-        'x-api-key': apiKey
-      };
-
-      fetch(url, { headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-    }
-
-    function getNewContacts() {
-      const url = 'http://localhost:8080/contacts';
+      const url = 'http://localhost:8080/new_contacts';
 
       const headers = {
         'id':999192342112,
@@ -529,12 +633,82 @@ function App() {
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
+        console.log('current jsonContact:',jsonContact['body']);
     }
+
+    function handleClickItems() {
+      const url = 'http://localhost:8080/new_items';
+
+      const headers = {
+        'id':999192342112,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+        console.log('current jsonItem:',jsonItem['body']);
+      }
+    function handleClickInvoice() {
+      const url = 'http://localhost:8080/new_invoices';
+
+      const headers = {
+        'id':999192342112,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+        console.log('current jsonInvoice:',jsonInvoice['body']);
+    }
+
+    function handleClickInvoiceLines() {
+      const url = 'http://localhost:8080/new_invoice_lines';
+
+      const headers = {
+        'id':999192342112,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+        console.log('current jsonInvoiceLines:',jsonInvoiceLines['body']);
+    }
+    function handleClickPayments() {
+      const url = 'http://localhost:8080/new_payments';
+
+      const headers = {
+        'id':999192342112,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+        console.log('current jsonPayment:',jsonPayment['body']);
+    }
+    function handleClickPaymentAllocations() {
+      const url = 'http://localhost:8080/new_payment_allocations';
+
+      const headers = {
+        'id':999192342112,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+        console.log('current jsonAlloc:',jsonAlloc['body']);
+    }
+
+
     
     const groupInvoicesByMonth = () => {
       const monthTotals = {};
       var totalinv=0;
-      jsonInvoice['data'].forEach((invoice) => {
+      jsonInvoice['body'].forEach((invoice) => {
         const dueDate = new Date(invoice.due_date);
         const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
         const exchange = parseFloat(invoice.exchange_rate);
@@ -570,8 +744,8 @@ function App() {
     const groupPaymentsByMonth = () => {
       const monthTotals = {};
       var totalpay=0;
-      //console.log(jsonPayment['data'])
-      jsonPayment['data'].forEach((payment) => {
+      //console.log(jsonPayment['body'])
+      jsonPayment['body'].forEach((payment) => {
         const dueDate = new Date(payment.date);
         const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
         const exchange = parseFloat(payment.exchange_rate);
@@ -665,8 +839,8 @@ function App() {
       const allocDict = {};
       var arrAlloc=[];
       var totalAlloc=0;
-      //console.log(jsonPayment['data'])
-      jsonAlloc['data'].forEach((Alloc) => {
+      //console.log(jsonPayment['body'])
+      jsonAlloc['body'].forEach((Alloc) => {
         const dueDate = new Date(Alloc.date);
         const monthYear = `${dueDate.getDay() + 1}-${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
         const invoice_id = Alloc.invoice_id;
@@ -697,7 +871,7 @@ function App() {
     };
     
 
-    if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false ||refreshAlloc==false){
+    if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false ||refreshAlloc==false ||refreshInvLines==false){
       
       return(
         <div className="App" >
@@ -720,10 +894,10 @@ function App() {
       const allocDict = allocDictList[0];
       const alloclist=allocDictList[1];
       //console.log('allocDict',allocDict);
-      //console.log('pay len',jsonPayment['data'].length)
-      //console.log('inv len',jsonInvoice['data'].length)
+      //console.log('pay len',jsonPayment['body'].length)
+      //console.log('inv len',jsonInvoice['body'].length)
 
-      getNewContacts();
+      //getNewContacts();
       //console.log(groupedInvoices);
 
       const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
@@ -756,14 +930,14 @@ function App() {
 
       
 
-      const customers = jsonContact['data'].filter(contact => contact.is_customer);
-      const suppliers = jsonContact['data'].filter(contact => contact.is_supplier);
-      const others = jsonContact['data'].filter(contact => !contact.is_customer && !contact.is_supplier);
+      const customers = jsonContact['body'].filter(contact => contact.is_customer);
+      const suppliers = jsonContact['body'].filter(contact => contact.is_supplier);
+      const others = jsonContact['body'].filter(contact => !contact.is_customer && !contact.is_supplier);
 
-      const Items = jsonItem['data'];
-      const listInvoices=jsonInvoice['data'];
+      const Items = jsonItem['body'];
+      const listInvoices=jsonInvoice['body'];
 
-      const getInvoiceDict = createInvoiceDictionary(jsonContact['data'], jsonInvoice['data']);
+      const getInvoiceDict = createInvoiceDictionary(jsonContact['body'], jsonInvoice['body']);
       const invoiceDictionary=getInvoiceDict[0];
       const customerIds=getInvoiceDict[1];
 
