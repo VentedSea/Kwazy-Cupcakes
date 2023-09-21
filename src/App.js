@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { useState, useEffect } from 'react';
 import myImage from './images/cupcake.png';
+import {v4 as uuidv4} from 'uuid';
 
 import {
   Chart as ChartJS,
@@ -223,8 +224,575 @@ function App() {
 
   const [totalInv, setTotalInv] = useState([0]);
   const [totalPay, setTotalPay] = useState([0]);
-
+  const [salesData,setSalesData]= useState([]);
   const [jsonAddData, setAddData] = useState([]);
+
+  const [isAddContactOpen, setIsAddContactOpen] = useState(false);
+  const [addName,setAddName]=useState(['']);
+  const [addIsCustomer,setAddIsCustomer]=useState(false);
+  const [addIsSupplier,setAddIsSupplier]=useState(false);
+  const [isNameExists, setIsNameExists] = useState(false);
+  const [customer_forList, setCustomer_forList] = useState([]);
+  const [supplier_forList, setSupplier_forList] = useState([]);
+  const [other_forList, setOther_forList] = useState([]);
+  const [both_forList, setBoth_forList] = useState([]);
+
+  const [isAddItemOpen, setIsAddItemOpen] = useState(false);
+  const [addItemName,setAddItemName]=useState(['']);
+  const [addPurchasePrice,setAddPurchasePrice]=useState(['']);
+  const [addQuantity,setAddQuantity]=useState(['']);
+  const [addSalePrice,setAddSalePrice]=useState(['']);
+
+  const [isAddPayOpen, setIsAddPayOpen] = useState(false);
+  const [addPayName,setAddPayName]=useState(['']);
+  const [addPayEX,setAddPayEX]=useState(['']);
+  const [isAddPayIncome, setIsAddPayIncome] = useState(false);
+  const [addPayTotal,setAddPayTotal]=useState(['']);
+
+  const [isAddInvoiceOpen, setIsAddInvoiceOpen] = useState(false);
+  const [invoiceForm, setInvoiceForm] = useState({
+    contact: '', // Selected contact
+    currency: 'GBP',
+    exchangeRate: '',
+    dueDate: '',
+    isSale: false,
+    invoiceLines: [
+      {
+        description: '',
+        quantity: '',
+        total: 0,
+        item: 'No item',
+      },
+    ],
+  });
+  
+
+
+  const [contactNames, setContactNames] = useState([]); // Array of contact names
+  const [items, setItems] = useState([]); // Array of items
+  //const [itemDictonaryDropdown,setitemDictonaryDropdown]=useState([]);
+  const [itemDictionary2, setitemDictionary2]= useState([]);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const fetchContacts = async () =>{
+    const url = 'http://localhost:8080/new_contacts';
+  
+    const headers = {
+    };
+
+    const response = await fetch(url, { headers })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data);
+                      setJsonContact([]);
+                      setJsonContact(data);
+                      
+                    })
+                    .catch(error => console.error("Error:", error));
+  }
+  const fetchItems = async () =>{
+    const url = 'http://localhost:8080/new_items';
+  
+    const headers = {
+    };
+
+    const response = await fetch(url, { headers })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data);
+                      setJsonItem([]);
+                      setJsonItem(data);
+                      
+                    })
+                    .catch(error => console.error("Error:", error));
+  }
+  const fetchPayments = async () =>{
+    const url = 'http://localhost:8080/new_payments';
+  
+    const headers = {
+    };
+
+    const response = await fetch(url, { headers })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data);
+                      setJsonPayment([]);
+                      setJsonPayment(data);
+                      
+                    })
+                    .catch(error => console.error("Error:", error));
+  }
+  const fetchInvoices = async () =>{
+    const url = 'http://localhost:8080/new_invoices';
+  
+    const headers = {
+    };
+
+    const response = await fetch(url, { headers })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data);
+                      setJsonInvoice([]);
+                      setJsonInvoice(data);
+                      
+                    })
+                    .catch(error => console.error("Error:", error));
+  }
+
+  const handleAddContact=async(uuid,name,customer,supplier)=> {
+    const url = 'http://localhost:8080/add_contact';
+
+    const headers = {
+      'id':uuid,
+      'is_customer':customer,
+      'is_supplier':supplier,
+      'name':name,
+    };
+
+    const response = await fetch(url, {headers })
+    if (response.status==200){
+      fetchContacts();
+    }
+  }
+  const handleAddItem=async(uuid,addItemName,addPurchasePrice,addQuantity,addSalePrice)=> {
+    const url = 'http://localhost:8080/add_item';
+
+    const headers = {
+      'id':uuid,
+      'name':addItemName,
+      'purchase_unit_price':addPurchasePrice,
+      'quantity_on_hand':addQuantity,
+      'sale_unit_price':addSalePrice,
+    };
+
+    const response = await fetch(url, {headers })
+    if (response.status==200){
+      fetchItems();
+    }
+  }
+  const handleAddPayment=async(uuid,contact_id,date,addPayEX,isAddPayIncome,addPayTotal)=> {
+    const url = 'http://localhost:8080/add_payment';
+
+    const headers = {
+      'id':uuid,
+      'contact_id':contact_id,
+      'payment_date':date,
+      'exchange_rate':addPayEX,
+      'is_income':isAddPayIncome,
+      'total':addPayTotal,
+    };
+
+    const response = await fetch(url, {headers })
+    if (response.status==200){
+      console.log('added payment');
+      fetchPayments();
+    }
+  }
+  const handleAddInvoice=async(uuid,contact_id,currency,due_date,exchange_rate,is_sale,issue_date,total)=> {
+    const url = 'http://localhost:8080/add_invoice';
+
+    const headers = {
+      'id':uuid,
+      'amount_due':total,
+      'contact_id':contact_id,
+      'currency':currency,
+      'due_date':due_date,
+      'exchange_rate':exchange_rate,
+      'is_sale':is_sale,
+      'issue_date':issue_date,
+      'paid':false,
+      'total':total,
+    };
+
+    const response = await fetch(url, {headers })
+                            //.then(response => response.json())
+                            //.then(data => console.log(data))
+                            
+                            //.catch(error => console.error("Error:", error));
+    if (response.status==200){
+      fetchInvoices();
+    }
+  }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  function handleClickItemsAll() {
+    //console.log('jsonContact["body"].length',jsonContact['body'].length);
+    //console.log(jsonContact['body'][0]['id']);
+    //console.log(jsonContact['body']);
+    for (let i=0;i<jsonItem['body'].length;i++){
+      //console.log(i)
+      let id=jsonItem['body'][i]['id'];
+      let name=jsonItem['body'][i]['name'];
+      let purchase_unit_price=jsonItem['body'][i]['purchase_unit_price'];
+      let quantity_on_hand=jsonItem['body'][i]['quantity_on_hand'];
+      let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
+      
+
+      const url = 'http://localhost:8080/add_item';
+
+      const headers = {
+        'id':id,
+        'name':name,
+        'purchase_unit_price':purchase_unit_price,
+        'quantity_on_hand':quantity_on_hand,
+        'sale_unit_price':sale_unit_price,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+
+      }
+    }
+  function handleClickInvoiceAll() {
+    
+    console.log(jsonInvoice['body'][0]);
+    for (let i=0;i<jsonInvoice['body'].length;i++){
+      //console.log(i)
+      let id=jsonInvoice['body'][i]['id'];
+      let amount_due=jsonInvoice['body'][i]['amount_due'];
+      let contact_id=jsonInvoice['body'][i]['contact_id'];
+      let currency=jsonInvoice['body'][i]['currency'];
+      let due_date=jsonInvoice['body'][i]['due_date'];
+      let exchange_rate=jsonInvoice['body'][i]['exchange_rate'];
+      let is_sale=jsonInvoice['body'][i]['is_sale'];
+      let issue_date=jsonInvoice['body'][i]['issue_date'];
+      let paid=jsonInvoice['body'][i]['paid'];
+      let paid_date=jsonInvoice['body'][i]['paid_date'];
+      let total=jsonInvoice['body'][i]['total'];
+      
+
+      const url = 'http://localhost:8080/add_invoice';
+
+      const headers = {
+        'id':id,
+        'amount_due':amount_due,
+        'contact_id':contact_id,
+        'currency':currency,
+        'due_date':due_date,
+        'exchange_rate':exchange_rate,
+        'is_sale':is_sale,
+        'issue_date':issue_date,
+        'paid':paid,
+        'paid_date':paid_date,
+        'total':total,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+
+      }
+      console.log('jsonInvoice["body"].length',jsonInvoice['body'].length);
+  }
+
+  function handleClickInvoiceLinesAll() {
+    console.log('jsonInvoiceLines["body"]:',jsonInvoiceLines['body'])
+  }
+  function handleClickPaymentsAll() {
+    for (let i=0;i<jsonPayment['body'].length;i++){
+      //console.log(i)
+      let id=jsonPayment['body'][i]['id'];
+      let contact_id=jsonPayment['body'][i]['contact_id'];
+      let date=jsonPayment['body'][i]['date'];
+      let exchange_rate=jsonPayment['body'][i]['exchange_rate'];
+      let is_income=jsonPayment['body'][i]['is_income'];
+      let total=jsonPayment['body'][i]['total'];
+      
+
+      const url = 'http://localhost:8080/add_payment';
+
+      const headers = {
+        'id':id,
+        'contact_id':contact_id,
+        'payment_date':date,
+        'exchange_rate':exchange_rate,
+        'is_income':is_income,
+        'total':total,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
+
+      }
+      console.log('jsonPayment["data"]',jsonPayment['body']);
+  }
+  function handleClickPaymentAllocationsAll() {
+    for (let i=0;i<jsonAlloc['body'].length;i++){
+      //console.log(i)
+      let id=jsonAlloc['body'][i]['invoice_id'];
+      let pay_id=jsonAlloc['body'][i]['payment_id'];
+      let date=jsonAlloc['body'][i]['date'];
+      let amount=jsonAlloc['body'][i]['amount'];
+      
+
+      const url = 'http://localhost:8080/add_payment_allocation';
+
+      const headers = {
+        'id':id,
+        'pay_id':pay_id,
+        'payment_date':date,
+        'amount':amount,
+      };
+
+      fetch(url, {headers })
+        .then(response => response.json())
+        .then(data =>{if(data['status']==500){console.log(data)}} )
+        .catch(error => console.error("Error:", error));
+
+      }
+      // console.log('jsonAlloc["data"].length',jsonAlloc['body'].length);
+      // console.log('jsonAlloc["data"]',jsonAlloc['body']);
+      // console.log('jsonInvoices["data"]',jsonInvoice['body']);
+  }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  const handleAddContactClick = () => {
+    setIsAddContactOpen(true);
+  };
+
+  const handleAddContactClose = () => {
+    setIsAddContactOpen(false);
+    setIsNameExists(false);
+  };
+
+  const handleAddContactSubmit = (e) => {
+    // Handle form submission and add the contact here
+    e.preventDefault();
+    console.log('Name:', addName);
+    console.log('Is Customer:', addIsCustomer);
+    console.log('Is Supplier:', addIsSupplier);
+    let myuuid = uuidv4();
+
+    var arrNames=[]
+    for(let i =0;i<jsonContact['body'].length;i++){
+      arrNames.push(jsonContact['body'][i]['name']);
+    }
+    console.log(arrNames);
+    if(arrNames.includes(addName)){
+      console.log('already inside');
+      setIsNameExists(true);
+    }
+    else{
+      setIsNameExists(false);
+      console.log('Your UUID is: ' + myuuid);
+      handleAddContact(myuuid,addName,addIsCustomer,addIsSupplier);
+      
+      
+      setIsAddContactOpen(false);
+
+    }
+
+    
+  };
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const handleAddItemClick = () => {
+  setIsAddItemOpen(true);
+};
+
+const handleAddItemClose = () => {
+  setIsAddItemOpen(false);
+  setIsNameExists(false);
+};
+
+const handleAddItemSubmit = (e) => {
+  // Handle form submission and add the contact here
+  e.preventDefault();
+  console.log('Name:', addItemName);
+  let myuuid = uuidv4();
+
+  var arrItemNames=[]
+  for(let i =0;i<jsonItem['body'].length;i++){
+    arrItemNames.push(jsonItem['body'][i]['name']);
+  }
+  console.log(arrItemNames);
+  if(arrItemNames.includes(addItemName)){
+    console.log('already inside');
+    setIsNameExists(true);
+  }
+  else{
+    setIsNameExists(false);
+    console.log('Your UUID is: ' + myuuid);
+    handleAddItem(myuuid,addItemName,addPurchasePrice,addQuantity,addSalePrice);
+    
+    
+    setIsAddItemOpen(false);
+
+  }
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+const handleAddPaymentClick = () => {
+  setIsAddPayOpen(true);
+};
+
+const closeAddPayment = () => {
+  setIsAddPayOpen(false);
+};
+
+const handleAddPaySubmit = (e) => {
+  // Handle form submission and add the contact here
+  e.preventDefault();
+  console.log('Name:', addItemName);
+  let myuuid = uuidv4();
+
+  let contact_id='';
+  let name=addPayName;
+  if(name==''){
+    name=jsonContact['body'][0]['name'];
+    console.log('pay name:',name);
+  }
+  for(let i=0;i<jsonContact['body'].length;i++){
+    if(name==jsonContact['body'][i]['name']){
+      contact_id=jsonContact['body'][i]['id'];
+    }
+  }
+
+  const date=new Date()
+  let currentDay= String(date.getDate()).padStart(2, '0');
+  let currentMonth = String(date.getMonth()+1).padStart(2,"0");
+  let currentYear = date.getFullYear();
+  // we will display the date as DD-MM-YYYY 
+  let curr_date = `${currentYear}-${currentMonth}-${currentDay}`;
+
+  console.log('addpayname',addPayName);
+  console.log(myuuid,name,contact_id,addPayEX,isAddPayIncome,addPayTotal);
+  //console.log('Your UUID is: ' + myuuid);
+  handleAddPayment(myuuid,contact_id,curr_date,addPayEX,isAddPayIncome,addPayTotal);
+  
+  
+  setIsAddItemOpen(false);
+
+  
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const openAddInvoice = () => {
+  setIsAddInvoiceOpen(true);
+};
+
+const closeAddInvoice = () => {
+  setIsAddInvoiceOpen(false);
+};
+
+const handleInvoiceLineChange = (index, field, value) => {
+  // Create a copy of the invoiceForm object to avoid mutating the state directly
+  console.log(index,field,value)
+  const updatedInvoiceForm = { ...invoiceForm };
+  // Access the specific invoice line by index
+  const invoiceLine = updatedInvoiceForm.invoiceLines[index];
+  console.log(invoiceLine);
+  // Update the field of the invoice line with the new value
+  invoiceLine[field] = value;
+
+  // Recalculate the total for the updated invoice line if applicable
+  if (field === 'quantity' || field === 'item') {
+    const quantity = parseFloat(invoiceLine.quantity || 0);
+
+    // Check if the item exists in the dictionary by name
+    const itemName = invoiceLine.item;
+    const item = itemDictionary2.find((item) => item.name === itemName);
+    console.log('itemname',itemName)
+    console.log('item',item);
+    if (item) {
+      invoiceLine.total = (quantity * item.price).toFixed(2);
+    } else {
+      // Handle the case where the item does not exist
+      invoiceLine.total = '0.00'; // Or any default value you prefer
+    }
+  }
+
+  // Update the state with the modified invoice form
+  setInvoiceForm(updatedInvoiceForm);
+};
+
+const handleAddInvoiceLine = () => {
+  setInvoiceForm((prevState) => ({
+    ...prevState,
+    invoiceLines: [
+      ...prevState.invoiceLines,
+      {
+        description: '',
+        quantity: '',
+        item: itemDictionary2[0]['name'], // Default item
+        total: 0, // Default total
+      },
+    ],
+  }));
+};
+
+const handleRemoveInvoiceLine = (index) => {
+  setInvoiceForm((prevState) => {
+    const updatedInvoiceLines = [...prevState.invoiceLines];
+    updatedInvoiceLines.splice(index, 1);
+    return { ...prevState, invoiceLines: updatedInvoiceLines };
+  });
+};
+
+const calculateTotal = () => {
+  return invoiceForm.invoiceLines.reduce((total, line) => total + parseFloat(line.total || 0), 0).toFixed(2);
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Handle form submission (adjust as needed)
+const handleSubmitCupcake = (e) => {
+  e.preventDefault();
+  // Send the invoiceForm data to your API or handle it as required
+  console.log('Submitted Invoice Data:', invoiceForm);
+  let myuuid = uuidv4();
+  let contact_id='';
+  let name=invoiceForm['contact'];
+  if(name===""){
+    name=jsonContact['body'][0]['name'];
+    console.log('new name:',name);
+  }
+  for(let i=0;i<jsonContact['body'].length;i++){
+    if(name===jsonContact['body'][i]['name']){
+      contact_id=jsonContact['body'][i]['id'];
+    }
+  }
+  let currency=invoiceForm['currency'];
+  let due_date=invoiceForm["dueDate"];
+  let exchange=invoiceForm['exchangeRate'];
+  let is_sale=invoiceForm['isSale'];
+  let total=calculateTotal();
+  const date=new Date()
+  let currentDay= String(date.getDate()).padStart(2, '0');
+  let currentMonth = String(date.getMonth()+1).padStart(2,"0");
+  let currentYear = date.getFullYear();
+  // we will display the date as DD-MM-YYYY 
+  let issue_date = `${currentYear}-${currentMonth}-${currentDay}`;
+  console.log("The current date is " + issue_date); 
+  console.log([myuuid,contact_id,currency,due_date,exchange,is_sale,total,issue_date]);
+  
+  handleAddInvoice(myuuid,contact_id,currency,due_date,exchange,is_sale,issue_date,total);
+  closeAddInvoice();
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function setSales(){
+      const onlySalesDict = [];
+      var totalinv=0;
+      //console.log('jsonInvoiceLines',jsonInvoiceLines['body']);
+      jsonInvoiceLines['body'].forEach((invoiceLine) => {
+        const item_code=invoiceLine.item_code;
+        if (item_code=='null'){
+          //console.log('item is null');
+        }
+        else{
+          const currSale={}
+          currSale['invoice_id'] = invoiceLine.invoice_id;
+          currSale['description']=invoiceLine.description;
+          currSale['total']=invoiceLine.total;
+          onlySalesDict.push(currSale);
+        }
+        
+      });
+      //console.log('onlySalesDict',onlySalesDict);
+      setSalesData(onlySalesDict);
+      //return onlySalesDict;
+    }
 
       //contacts
       useEffect(() => {
@@ -244,14 +812,23 @@ function App() {
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check contacts
-        //console.log('json',jsonContact); // This will log the updated state
-        
+        console.log('json',jsonContact); // This will log the updated state
+        var arrContacts=[]
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonContact)){
           //console.log("set to true");
           setRefreshCon(true);
-          
-          //console.log('jsonContact[data]',jsonContact['body']);;
+          setCustomer_forList([]);
+          setCustomer_forList(jsonContact['body'].filter(contact => contact.is_customer &&(!contact.is_supplier)));
+          setSupplier_forList(jsonContact['body'].filter(contact => contact.is_supplier &&(!contact.is_customer)));
+          setOther_forList(jsonContact['body'].filter(contact => !contact.is_customer && !contact.is_supplier));
+          setBoth_forList(jsonContact['body'].filter(contact => contact.is_supplier && contact.is_customer));
+
+          for (let i =0;i<jsonContact['body'].length;i++){
+            arrContacts.push({'name':jsonContact['body'][i]['name']});
+          }
+          setContactNames(arrContacts);
+          //console.log('setcustomers',customer_forList);;
         }
         
       }, [jsonContact]);
@@ -323,7 +900,7 @@ function App() {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            console.log(data);
+            //console.log(data);
             setJsonItem(data);
             //
           })
@@ -332,12 +909,40 @@ function App() {
   
       useEffect(() => {//check items
         //console.log('json',jsonContact); // This will log the updated state
-        
+        var arrItemNames=[]
+        var itemDict={}
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonItem)){
-          console.log("set to true");
+          //console.log("set to true");
           setRefreshItem(true);
+          
           //console.log('jsonpayment[data]',jsonPayment['body']);;
+          for (let i =0;i<jsonItem['body'].length;i++){
+            itemDict={}
+            itemDict['name']=jsonItem['body'][i]['name'];
+            itemDict['price']=jsonItem['body'][i]['sale_unit_price'];
+            arrItemNames.push(itemDict);
+          }
+          
+          //setItems(arrItemNames);
+          //console.log('jsonItem:',jsonItem)
+          console.log('items name price',arrItemNames);
+          setitemDictionary2(arrItemNames);
+          setInvoiceForm({
+            contact: '', // Selected contact
+            currency: 'GBP',
+            exchangeRate: '',
+            dueDate: '',
+            isSale: false,
+            invoiceLines: [
+              {
+                description: '',
+                quantity: '',
+                total: '',
+                item: arrItemNames[0]['name'],
+              },
+            ],
+          })
         }
         
       }, [jsonItem]);
@@ -351,20 +956,21 @@ function App() {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            console.log(data);
+            //console.log(data);
             setJsonInvoiceLines(data);
             //
           })
           .catch(error => console.error("Error:", error));
       }, []); // Empty dependency array to run this effect only once
       
-      useEffect(() => {//check items
+      useEffect(() => {//check invoice lines
         //console.log('json',jsonContact); // This will log the updated state
         
         //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonInvoiceLines)){
-          console.log("set to true");
+          //console.log("set to true");
           setRefreshInvLines(true);
+          setSales();
           //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
@@ -379,7 +985,7 @@ function App() {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            console.log(data);
+            //console.log(data);
             setJsonAlloc(data);
             //
           })
@@ -460,168 +1066,7 @@ function App() {
   else{
     
 
-    function handleClickContactsAll() {
-      console.log('jsonContact["body"].length',jsonContact['body'].length);
-      console.log(jsonContact['body'][0]['id']);
-      console.log(jsonContact['body']);
-      for (let i=1;i<jsonContact['body'].length;i++){
-        //console.log(i)
-        let id=jsonContact['body'][i]['id'];
-        let is_customer=jsonContact['body'][i]['is_customer'];
-        let is_supplier=jsonContact['body'][i]['is_supplier'];
-        let name=jsonContact['body'][i]['name'];
 
-        const url = 'http://localhost:8080/add_contact';
-
-      const headers = {
-        'id':id,
-        'is_customer':is_customer,
-        'is_supplier':is_supplier,
-        'name':name,
-      };
-
-      fetch(url, {headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-
-      }
-    }
-
-    function handleClickItemsAll() {
-      //console.log('jsonContact["body"].length',jsonContact['body'].length);
-      //console.log(jsonContact['body'][0]['id']);
-      //console.log(jsonContact['body']);
-      for (let i=0;i<jsonItem['body'].length;i++){
-        //console.log(i)
-        let id=jsonItem['body'][i]['id'];
-        let name=jsonItem['body'][i]['name'];
-        let purchase_unit_price=jsonItem['body'][i]['purchase_unit_price'];
-        let quantity_on_hand=jsonItem['body'][i]['quantity_on_hand'];
-        let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
-        
-
-        const url = 'http://localhost:8080/add_item';
-
-        const headers = {
-          'id':id,
-          'name':name,
-          'purchase_unit_price':purchase_unit_price,
-          'quantity_on_hand':quantity_on_hand,
-          'sale_unit_price':sale_unit_price,
-        };
-
-        fetch(url, {headers })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch(error => console.error("Error:", error));
-
-        }
-      }
-    function handleClickInvoiceAll() {
-      
-      console.log(jsonInvoice['body'][0]);
-      for (let i=0;i<jsonInvoice['body'].length;i++){
-        //console.log(i)
-        let id=jsonInvoice['body'][i]['id'];
-        let amount_due=jsonInvoice['body'][i]['amount_due'];
-        let contact_id=jsonInvoice['body'][i]['contact_id'];
-        let currency=jsonInvoice['body'][i]['currency'];
-        let due_date=jsonInvoice['body'][i]['due_date'];
-        let exchange_rate=jsonInvoice['body'][i]['exchange_rate'];
-        let is_sale=jsonInvoice['body'][i]['is_sale'];
-        let issue_date=jsonInvoice['body'][i]['issue_date'];
-        let paid=jsonInvoice['body'][i]['paid'];
-        let paid_date=jsonInvoice['body'][i]['paid_date'];
-        let total=jsonInvoice['body'][i]['total'];
-        
-
-        const url = 'http://localhost:8080/add_invoice';
-
-        const headers = {
-          'id':id,
-          'amount_due':amount_due,
-          'contact_id':contact_id,
-          'currency':currency,
-          'due_date':due_date,
-          'exchange_rate':exchange_rate,
-          'is_sale':is_sale,
-          'issue_date':issue_date,
-          'paid':paid,
-          'paid_date':paid_date,
-          'total':total,
-        };
-
-        fetch(url, {headers })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch(error => console.error("Error:", error));
-
-        }
-        console.log('jsonInvoice["body"].length',jsonInvoice['body'].length);
-    }
-
-    function handleClickInvoiceLinesAll() {
-      console.log('jsonInvoiceLines["body"]:',jsonInvoiceLines['body'])
-    }
-    function handleClickPaymentsAll() {
-      for (let i=0;i<jsonPayment['body'].length;i++){
-        //console.log(i)
-        let id=jsonPayment['body'][i]['id'];
-        let contact_id=jsonPayment['body'][i]['contact_id'];
-        let date=jsonPayment['body'][i]['date'];
-        let exchange_rate=jsonPayment['body'][i]['exchange_rate'];
-        let is_income=jsonPayment['body'][i]['is_income'];
-        let total=jsonPayment['body'][i]['total'];
-        
-
-        const url = 'http://localhost:8080/add_payment';
-
-        const headers = {
-          'id':id,
-          'contact_id':contact_id,
-          'payment_date':date,
-          'exchange_rate':exchange_rate,
-          'is_income':is_income,
-          'total':total,
-        };
-
-        fetch(url, {headers })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch(error => console.error("Error:", error));
-
-        }
-        console.log('jsonPayment["data"]',jsonPayment['body']);
-    }
-    function handleClickPaymentAllocationsAll() {
-      for (let i=0;i<jsonAlloc['body'].length;i++){
-        //console.log(i)
-        let id=jsonAlloc['body'][i]['invoice_id'];
-        let pay_id=jsonAlloc['body'][i]['payment_id'];
-        let date=jsonAlloc['body'][i]['date'];
-        let amount=jsonAlloc['body'][i]['amount'];
-        
-
-        const url = 'http://localhost:8080/add_payment_allocation';
-
-        const headers = {
-          'id':id,
-          'pay_id':pay_id,
-          'payment_date':date,
-          'amount':amount,
-        };
-
-        fetch(url, {headers })
-          .then(response => response.json())
-          .then(data =>{if(data['status']==500){console.log(data)}} )
-          .catch(error => console.error("Error:", error));
-
-        }
-        // console.log('jsonAlloc["data"].length',jsonAlloc['body'].length);
-        // console.log('jsonAlloc["data"]',jsonAlloc['body']);
-        // console.log('jsonInvoices["data"]',jsonInvoice['body']);
-    }
     function handleClickContacts() {
       const url = 'http://localhost:8080/new_contacts';
 
@@ -633,7 +1078,7 @@ function App() {
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
-        console.log('current jsonContact:',jsonContact['body']);
+        console.log('current jsonContact:',jsonContact);
     }
 
     function handleClickItems() {
@@ -740,34 +1185,57 @@ function App() {
       return [groupedData,totalinv];
     };
 
-    //Payments
     const groupPaymentsByMonth = () => {
       const monthTotals = {};
       var totalpay=0;
+      var arrInv=[]
+      var arrPay=[] 
+      for(let i =0;i<salesData.length;i++){
+        //console.log('salesData[i]',salesData[0]);
+        arrInv.push(salesData[i].invoice_id);
+      }
+      //console.log('arrInv.length',arrInv.length);
+      let counter=0;
+      for (let i=0;i<jsonAlloc['body'].length;i++){
+        if(arrInv.includes(jsonAlloc['body'][i]['invoice_id'])){
+          counter+=1;
+          arrPay.push(jsonAlloc['body'][i]['payment_id']);
+        }
+      }
+      //console.log('arrPay.length',arrPay.length);
+      //console.log(counter);
       //console.log(jsonPayment['body'])
+      counter=0;
       jsonPayment['body'].forEach((payment) => {
-        const dueDate = new Date(payment.date);
-        const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-        const exchange = parseFloat(payment.exchange_rate);
-        const total = parseFloat(payment.total)/exchange; 
-        const isIncome=payment.is_income;
-        if (isIncome){
-        totalpay+=total;
-          if (monthTotals[monthYear]) {
-            monthTotals[monthYear].total += total;
-          } else {
-            monthTotals[monthYear] = {
-              monthYear,
-              total,
-            };
+        let flag=true;
+        // if(arrPay.includes(payment.id)){
+        //   flag=true;
+        //   counter+=1;
+        // }
+        if(flag==true){
+          const dueDate = new Date(payment.date);
+          const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+          const exchange = parseFloat(payment.exchange_rate);
+          const total = parseFloat(payment.total)/exchange; 
+          const isIncome=payment.is_income;
+          if (isIncome){
+          totalpay+=total;
+            if (monthTotals[monthYear]) {
+              monthTotals[monthYear].total += total;
+            } else {
+              monthTotals[monthYear] = {
+                monthYear,
+                total,
+              };
+            }
+            //console.log('is income:',payment);
           }
-          //console.log('is income:',payment);
         }
         // else{
         //   console.log('is not income:',payment);
         // }
       });
-
+      //console.log('paycounter:',counter);
       // Convert the grouped data object to an array
       const groupedData = Object.values(monthTotals);
       //setTotalPay(totalpay);
@@ -870,6 +1338,185 @@ function App() {
       return [allocDict,arrAlloc];
     };
     
+    const getOnlySales = () => {
+      const onlySalesDict = [];
+      var totalinv=0;
+      //console.log('jsonInvoiceLines',jsonInvoiceLines['body']);
+      jsonInvoiceLines['body'].forEach((invoiceLine) => {
+        const item_code=invoiceLine.item_code;
+        if (item_code=='null'){
+          //console.log('item is null');
+        }
+        else{
+          const currSale={}
+          currSale['invoice_id'] = invoiceLine.invoice_id;
+          currSale['description']=invoiceLine.description;
+          currSale['total']=invoiceLine.total;
+          onlySalesDict.push(currSale);
+        }
+        
+      });
+      //console.log('onlySalesDict',onlySalesDict);
+      return onlySalesDict;
+    };
+
+    const groupSalesByMonth = () => {
+      const monthTotals = {};
+      var totalinv=0;
+      var counter=0;
+      var arrInv=[]
+      for(let i =0;i<salesData.length;i++){
+        //console.log('salesData[i]',salesData[0]);
+        arrInv.push(salesData[i].invoice_id);
+      }
+      
+      /*
+      0: "2c1e8fdc-5469-4451-82a0-8575c88eb5ad"
+      1: "1d179948-3ce6-4fc1-9dd1-bb5e43de4f05"
+      2: "1268c90c-5bc0-4c9d-a665-5e52dffcaac0"
+      3: "dd85825d-fb11-4c61-addb-5afcf620fe94"
+      4: "70571ab5-077c-4b0a-8091-b6850626fb5a"
+      5: "933d4aff-ee8c-4288-a8ea-49b6dec67aa3"
+      6: "c5ee8382-90cd-4150-ac4a-05d34337bdc4"
+      7: "0882a2d4-e586-40b4-90d3-fb54723d44a8"
+      8: "a863e4d2-c0ff-46f6-98ce-a5b6fc73233c"
+      9: "e3088711-c9e5-4899-ade2-caecb3e399bd"
+      10: "c1667e06-5710-4ceb-a5ec-2e7d57b292ed"
+      */
+      
+      //console.log('jsonInvoice["body"]:',jsonInvoice['body']);
+      //if (arrInv.includes('2461b75e-3118-45a1-a1b1-31d2d6368fe9')){
+        //console.log('the invoice is in there!!!');
+      //}//jsonInvoice['body'].length
+      for(let i =0;i<jsonInvoice['body'].length;i++){
+        const invoice=jsonInvoice['body'][i];
+        //console.log('invoice.invoice_id',invoice['id']);
+        var flag=false;
+        if(arrInv.includes(invoice.id)){
+          flag=true;
+          counter+=1;
+        }
+        
+        if (flag==true){
+          const dueDate = new Date(invoice.due_date);
+          const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+          const exchange = parseFloat(invoice.exchange_rate);
+          const total = parseFloat(invoice.total)/exchange;
+          //console.log('invoice.total:',invoice.total);
+          //console.log('invoice.exchange_rate:',invoice.exchange_rate);
+          //console.log('total:',total);
+          //const isSale=invoice.is_sale;
+          //if(isSale){
+            totalinv+=total;
+            if (monthTotals[monthYear]) {
+              monthTotals[monthYear].total += total;
+            } else {
+              monthTotals[monthYear] = {
+                monthYear,
+                total,
+              };
+            }
+        }
+      };
+      // Convert the grouped data object to an array
+      const groupedData = Object.values(monthTotals);
+      //setTotalInv(totalinv);
+      //console.log('counter:',counter);
+      return [groupedData,totalinv];
+    };
+
+    const groupSalesByMonth2 = () => {//Copy of above function but used to check something else in backend
+      const monthTotals = {};
+      var totalinv=0;
+      const monthTotalsPay = {};
+      var totalcost=0;
+      var counter=0;
+      var arrInv=[]
+      var arrInv2=[]
+      for(let i =0;i<salesData.length;i++){
+        //console.log('salesData[i]',salesData[0]);
+        arrInv.push(salesData[i].invoice_id);
+      }
+      //console.log('arrInv.length',arrInv.length);
+      arrInv2.push(arrInv[0]);
+      for(let i =0;i<arrInv.length;i++){
+        if (arrInv2[arrInv2.length-1]==arrInv[i]){}
+        else{
+          //console.log('salesData[i]',salesData[0]);
+        arrInv2.push(arrInv[i]);
+        }
+        
+      }
+      //console.log(arrInv2);
+      //console.log('arrInv2.length',arrInv2.length);
+      
+      /*
+      0: "2c1e8fdc-5469-4451-82a0-8575c88eb5ad"
+      1: "1d179948-3ce6-4fc1-9dd1-bb5e43de4f05"
+      2: "1268c90c-5bc0-4c9d-a665-5e52dffcaac0"
+      3: "dd85825d-fb11-4c61-addb-5afcf620fe94"
+      4: "70571ab5-077c-4b0a-8091-b6850626fb5a"
+      5: "933d4aff-ee8c-4288-a8ea-49b6dec67aa3"
+      6: "c5ee8382-90cd-4150-ac4a-05d34337bdc4"
+      7: "0882a2d4-e586-40b4-90d3-fb54723d44a8"
+      8: "a863e4d2-c0ff-46f6-98ce-a5b6fc73233c"
+      9: "e3088711-c9e5-4899-ade2-caecb3e399bd"
+      10: "c1667e06-5710-4ceb-a5ec-2e7d57b292ed"
+      */
+      
+      //console.log('jsonInvoice["body"]:',jsonInvoice['body']);
+      if (arrInv.includes('2461b75e-3118-45a1-a1b1-31d2d6368fe9')){
+        //console.log('the invoice is in there!!!');
+      }//jsonInvoice['body'].length
+      for(let i =0;i<jsonInvoice['body'].length;i++){
+        const invoice=jsonInvoice['body'][i];
+        //console.log('invoice.invoice_id',invoice['id']);
+        var flag=false;
+        if(arrInv2.includes(invoice.id)){
+          flag=true;
+          counter+=1;
+        }
+        
+        if (flag==true){
+          const dueDate = new Date(invoice.due_date);
+          const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+          const exchange = parseFloat(invoice.exchange_rate);
+          const total = parseFloat(invoice.total)/exchange;
+          //console.log('invoice.total:',invoice.total);
+          //console.log('invoice.exchange_rate:',invoice.exchange_rate);
+          //console.log('total:',total);
+          const isSale=invoice.is_sale;
+          if(isSale){
+            totalinv+=total;
+            if (monthTotals[monthYear]) {
+              monthTotals[monthYear].total += total;
+            } else {
+              monthTotals[monthYear] = {
+                monthYear,
+                total,
+              };
+            }
+          }
+          else{
+            totalcost+=total;
+            if (monthTotalsPay[monthYear]) {
+              monthTotalsPay[monthYear].total += total;
+            } else {
+              monthTotalsPay[monthYear] = {
+                monthYear,
+                total,
+              };
+            }
+          }
+        }
+      };
+      // Convert the grouped data object to an array
+      const groupedData = Object.values(monthTotals);
+      const groupedDataCosts = Object.values(monthTotalsPay);
+      //setTotalInv(totalinv);
+      //console.log('counter:',counter);
+      return [groupedData,totalinv,groupedDataCosts,totalcost];
+    };
 
     if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false ||refreshAlloc==false ||refreshInvLines==false){
       
@@ -884,9 +1531,9 @@ function App() {
     }
 
     else{
-      const getInvData=groupInvoicesByMonth();
-      const groupedInvoices = getInvData[0];
-      const finalInvTotal=getInvData[1];
+      //const getInvData=groupInvoicesByMonth();
+      //const groupedInvoices = getInvData[0];
+      //const finalInvTotal=getInvData[1];
       const getPayData=groupPaymentsByMonth();
       const groupedPayments = getPayData[0];
       const finalPayTotal=getPayData[1];
@@ -896,11 +1543,32 @@ function App() {
       //console.log('allocDict',allocDict);
       //console.log('pay len',jsonPayment['body'].length)
       //console.log('inv len',jsonInvoice['body'].length)
-
+      //console.log(salesData);
+      //const onlySalesDict=getOnlySales();
+      //setSalesData(onlySalesDict);
+      const getSalesData=groupSalesByMonth2();
+      const groupedInvoices = getSalesData[0];
+      const finalInvTotal=getSalesData[1];
+      const groupedCupcakeCost = getSalesData[2];
+      const finalCupcakeCost=getSalesData[3];
+      
       //getNewContacts();
       //console.log(groupedInvoices);
 
       const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
+        const [aMonth, aYear] = a.monthYear.split('-');
+        const [bMonth, bYear] = b.monthYear.split('-');
+        
+        // Compare years first
+        if (aYear !== bYear) {
+          return aYear - bYear;
+        }
+        
+        // If years are the same, compare months
+        return aMonth - bMonth;
+      });
+
+      const sortedGroupedCupcakeCost = groupedCupcakeCost.sort((a, b) => {
         const [aMonth, aYear] = a.monthYear.split('-');
         const [bMonth, bYear] = b.monthYear.split('-');
         
@@ -930,9 +1598,10 @@ function App() {
 
       
 
-      const customers = jsonContact['body'].filter(contact => contact.is_customer);
-      const suppliers = jsonContact['body'].filter(contact => contact.is_supplier);
-      const others = jsonContact['body'].filter(contact => !contact.is_customer && !contact.is_supplier);
+      //const customers = jsonContact['body'].filter(contact => contact.is_customer &&(!contact.is_supplier));
+      //const suppliers = jsonContact['body'].filter(contact => contact.is_supplier &&(!contact.is_customer));
+      //const bothCustAndSup=jsonContact['body'].filter(contact => contact.is_supplier && contact.is_customer);
+      //const others = jsonContact['body'].filter(contact => !contact.is_customer && !contact.is_supplier);
 
       const Items = jsonItem['body'];
       const listInvoices=jsonInvoice['body'];
@@ -950,57 +1619,371 @@ function App() {
         <div className="App" >
           <title>This App</title>
           <header className="App-header">
-          <button onClick={handleClickContacts}>Contacts</button>
+          {/* {<button onClick={handleClickContacts}>Contacts</button>
           <button onClick={handleClickItems}>items</button>
           <button onClick={handleClickInvoice}>invoice</button>
           <button onClick={handleClickInvoiceLines}>invoice-lines</button>
           <button onClick={handleClickPayments}>payments</button>
-          <button onClick={handleClickPaymentAllocations}>payment allocations</button>
+          <button onClick={handleClickPaymentAllocations}>payment allocations</button>} */}
             <h1>J's Cupcakes</h1>
+            
+            
           </header>
-          <body className="App-body">
+          <div className="App-body">
+            {isAddContactOpen && (
+              <div className="overlay">
+                <div className="popup">
+                  <h2>Add Contact</h2>
+                  {isNameExists && <p className="error-message">Name already exists.</p>}
+                  <form onSubmit={handleAddContactSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="addName">Name:</label>
+                      <input
+                        type="text"
+                        id="addName"
+                        name="addName"
+                        value={addName}
+                        onChange={(e) => setAddName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Is Customer:
+                        <input
+                          type="checkbox"
+                          id="addIsCustomer"
+                          checked={addIsCustomer}
+                          onChange={() => setAddIsCustomer(!addIsCustomer)}
+                        />
+                      </label>
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Is Supplier:
+                        <input
+                          type="checkbox"
+                          id="addIsSupplier"
+                          checked={addIsSupplier}
+                          onChange={() => setAddIsSupplier(!addIsSupplier)}
+                        />
+                      </label>
+                    </div>
+                    <div className="form-group">
+                      <button type="submit">Submit</button>
+                      <button type="submit" className='close-button' onClick={handleAddContactClose}>Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+            {isAddItemOpen && (
+              <div className="overlay">
+                <div className="popup">
+                  <h2>Add Item</h2>
+                  {isNameExists && <p className="error-message">Name already exists.</p>}
+                  <form onSubmit={handleAddItemSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="addItemName">Name:</label>
+                      <input
+                        type="text"
+                        id="addItemName"
+                        name="addItemName"
+                        value={addItemName}
+                        onChange={(e) => setAddItemName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="addPurchasePrice">Purchase Price:</label>
+                      <input
+                        type="text"
+                        id="addPurchasePrice"
+                        name="addPurchasePrice"
+                        value={addPurchasePrice}
+                        onChange={(e) => setAddPurchasePrice(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="addQuantity">Quantity on hand:</label>
+                      <input
+                        type="text"
+                        id="addQuantity"
+                        name="addQuantity"
+                        value={addQuantity}
+                        onChange={(e) => setAddQuantity(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="addSalePrice">Sales Price:</label>
+                      <input
+                        type="text"
+                        id="addSalePrice"
+                        name="addSalePrice"
+                        value={addSalePrice}
+                        onChange={(e) => setAddSalePrice(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <button type="submit">Submit</button>
+                      <button type="submit" className='close-button' onClick={handleAddItemClose}>Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+            {isAddInvoiceOpen && (
+              <div className="overlay">
+                <div className="popup">
+                  {/* Your invoice input form here */}
+                  <div>
+                    <h2>Add Invoice</h2>
+                    <form onSubmit={handleSubmitCupcake}>
+                      <div>
+                        <label htmlFor="contact">Contact:</label>
+                        <select
+                          id="contact"
+                          name="contact"
+                          value={invoiceForm.contact}
+                          onChange={(e) => setInvoiceForm({ ...invoiceForm, contact: e.target.value })}
+                        >
+                          {contactNames.map((item) => (
+                            <option key={item.id} value={item.name}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="currency">Currency:</label>
+                        <input
+                          type="text"
+                          id="currency"
+                          name="currency"
+                          value={invoiceForm.currency}
+                          onChange={(e) => setInvoiceForm({ ...invoiceForm, currency: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="exchangeRate">Exchange Rate:</label>
+                        <input
+                          type="text"
+                          id="exchangeRate"
+                          name="exchangeRate"
+                          value={invoiceForm.exchangeRate}
+                          onChange={(e) => setInvoiceForm({ ...invoiceForm, exchangeRate: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="dueDate">Due Date:</label>
+                        <input
+                          type="date"
+                          id="dueDate"
+                          name="dueDate"
+                          value={invoiceForm.dueDate}
+                          onChange={(e) => setInvoiceForm({ ...invoiceForm, dueDate: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label>
+                          Is Sale:
+                          <input
+                            type="checkbox"
+                            name="isSale"
+                            checked={invoiceForm.isSale}
+                            onChange={(e) => setInvoiceForm({ ...invoiceForm, isSale: e.target.checked })}
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <h3>Invoice Lines</h3>
+                        {invoiceForm.invoiceLines.map((line, index) => (
+                          
+                          <div key={index}>
+                            
+                            <div>
+                              <label htmlFor={`description-${index}`}>Description:</label>
+                              <input
+                                type="text"
+                                id={`description-${index}`}
+                                name={`description-${index}`}
+                                value={line.description}
+                                onChange={(e) => handleInvoiceLineChange(index, 'description', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <label htmlFor={`quantity-${index}`}>Quantity:</label>
+                              <input
+                                type="text"
+                                id={`quantity-${index}`}
+                                name={`quantity-${index}`}
+                                value={line.quantity}
+                                onChange={(e) => handleInvoiceLineChange(index, 'quantity', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <label htmlFor={`item-${index}`}>Item:</label>
+                              <select
+                                id={`item-${index}`}
+                                name={`item-${index}`}
+                                value={line.item}
+                                onChange={(e) => handleInvoiceLineChange(index, 'item', e.target.value)}
+                              >
+                                {itemDictionary2.map((item) => (
+                                  <option key={item.id} value={item.name}>
+                                    {item.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label>Total:</label>
+                              <span>{line.total}</span>
+                            </div>
+                            <div>
+                              {index === 0 ? (
+                                <button type="button" onClick={handleAddInvoiceLine}>
+                                  Add Line
+                                </button>
+                              ) : (
+                                <button type="button" onClick={() => handleRemoveInvoiceLine(index)}>
+                                  Remove Line
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        <div>
+                          <label>Total:</label>
+                          <span>{calculateTotal()}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <button type="submit">Submit</button>
+                        <button type="submit" className='close-button' onClick={closeAddInvoice}>Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            )}
+            {isAddPayOpen && (
+              <div className="overlay">
+                <div className="popup">
+                  {/* Your invoice input form here */}
+                  <div>
+                    <h2>Add Payment</h2>
+                    <form onSubmit={handleAddPaySubmit}>
+                      <div>
+                        <label htmlFor="addPayName">Contact:</label>
+                        <select
+                          id="addPayName"
+                          name="addPayName"
+                          value={addPayName}
+                          onChange={(e) => setAddPayName(e.target.value)}
+                        >
+                          {contactNames.map((item) => (
+                            <option key={item.id} value={item.name}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="addPayEX">Exchange Rate:</label>
+                        <input
+                          type="text"
+                          id="addPayEX"
+                          name="addPayEX"
+                          value={addPayEX}
+                          onChange={(e) => setAddPayEX(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label>
+                          Is Income:
+                          <input
+                            type="checkbox"
+                            name="isAddPayIncome"
+                            checked={isAddPayIncome}
+                            onChange={(e) => setIsAddPayIncome(!isAddPayIncome)}
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <label htmlFor="addPayTotal">Total:</label>
+                        <input
+                          type="text"
+                          id="addPayTotal"
+                          name="addPayTotal"
+                          value={addPayTotal}
+                          onChange={(e) => setAddPayTotal(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <button type="submit">Submit</button>
+                        <button type="submit" className='close-button' onClick={closeAddPayment}>Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="containerUpper">
               <h1>Dashboard</h1>
               <div className="container">
 
                 <div className="box">
-                  <h2>Monthly Invoice Totals</h2>
-                  <p>Total Invoices: {Math.round(finalInvTotal)}</p>
+                  <h2>Monthly Cupcake Sales</h2>
+                  <p>Total Cupcake sales: {Math.round(finalInvTotal)}</p>
                   <div className="graph-div">
                     <LineChart   data={sortedGroupedInvoices} />
                     </div>
+                    <button className='add-button' onClick={openAddInvoice}>Add Cupcake Sale</button>
                 </div>
                 
                 <div className="box">
-                  {//<button onClick={handleClickContacts}>Contacts</button>
-                  //<button onClick={handleClickItems}>items</button>
-                  //<button onClick={handleClickInvoice}>invoice</button>
-                  //<button onClick={handleClickInvoiceLines}>invoice-lines</button>
-                  //<button onClick={handleClickPayments}>payments</button>
-                  //<button onClick={handleClickPaymentAllocations}>payment allocations</button>
-                  }
-                  <h2>Monthly Payments Totals</h2>
-                  <p>Total Payments: {Math.round(finalPayTotal)}</p>
+                  <h2>Monthly Overall income</h2>
+                  <p>Total income: {Math.round(finalPayTotal)}</p>
                   <div className="graph-div">
                     <LineChart   data={sortedGroupedPayments} />
                   </div>
+                  <button className='add-button' onClick={handleAddPaymentClick}>Add payment</button>
                 </div>
+              </div>
+              <hr className="horiLine"></hr>
+              <div className="container">
+
+                <div className="box">
+                  <h2>Monthly Cupcake Costs</h2>
+                  <p>Total cupcake costs: {Math.round(finalCupcakeCost)}</p>
+                  <div className="graph-div">
+                    <LineChart   data={sortedGroupedCupcakeCost} />
+                    </div>
+                </div>
+                
+                
               </div>
               <hr className="horiLine"></hr>
               <div className="boxContact">
                 <CustomerList invoiceDictionary={invoiceDictionary} customerIds={customerIds} />
               </div>
               <hr className="horiLine"></hr> 
+              <div><button className='add-button' onClick={handleAddItemClick}>Add Item</button></div>
               <div className="boxContact">
               <ItemList itemDictionary={itemDictionary} itemIds={itemIds} />
               </div>
-              <hr className="horiLine"></hr>            
+              <hr className="horiLine"></hr>
+              <div><button className='add-button'  onClick={handleAddContactClick}>Add Contact</button></div>            
               <div className="boxContact">
                 <div className="spacer">
                   <h3>Customer Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {customers.map((contact) => (
+                      {customer_forList.map((contact) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
@@ -1011,7 +1994,7 @@ function App() {
                   <h3>Supplier Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {suppliers.map((contact) => (
+                      {supplier_forList.map((contact) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
@@ -1022,15 +2005,27 @@ function App() {
                   <h3>Other Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {others.map((contact) => (
+                      {other_forList.map((contact) => (
+                        <li key={contact.id}>{contact.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div> 
+              </div>
+              <div className="boxContact">           
+              <div className="spacer">
+                  <h3>Both Supplier and Customer</h3>
+                  <div className="tags">
+                    <ul>
+                      {both_forList.map((contact) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
                   </div>
                 </div>
-              </div>
+              </div>           
             </div>
-          </body>
+          </div>
         </div>
       );
     }
