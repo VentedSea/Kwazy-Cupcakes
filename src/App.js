@@ -25,7 +25,75 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+function OverDueList({ invoiceDictionary, customerIds }) {
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [isListExpanded, setListExpanded] = useState(false);
 
+  const handleCustomerSelect = (customerId) => {
+    if (selectedCustomers.includes(customerId)) {
+      // If the customer is already selected, remove them
+      setSelectedCustomers(selectedCustomers.filter((id) => id !== customerId));
+    } else {
+      // Otherwise, add the customer to the selected list
+      setSelectedCustomers([...selectedCustomers, customerId]);
+    }
+  };
+  const toggleList = () => {
+    setListExpanded(!isListExpanded);
+  };
+
+  const formatCurrency = (amount) => {
+    return parseFloat(amount).toFixed(2);
+  };
+
+  const calculateTotal = (customerId) => {
+    return invoiceDictionary[customerId].purchases.reduce(
+      (total, purchase) => total + parseFloat(purchase.amount),
+      0
+    );
+  };
+
+  return (
+    <div className="customerList">
+      <h2>Overdue invoices</h2>
+        <button onClick={toggleList}>
+          {isListExpanded ? '-' : '+'}
+        </button>
+      
+      {isListExpanded && (
+        <ul className="customerList">
+          {customerIds.map((customerId) => (
+            <div key={customerId} className="customer-list">
+              <h3 onClick={() => handleCustomerSelect(customerId)}>
+                {invoiceDictionary[customerId].name}
+              </h3>
+              {selectedCustomers.includes(customerId) && (
+                <ul className="purchase-list">
+                  <li className="purchase-header">
+                    <span>Date</span>
+                    <span>Amount</span>
+                  </li>
+                  {invoiceDictionary[customerId].purchases.map((purchase, index) => (
+                    <li key={index} className="purchase-item">
+                      <span className="purchase-date">{purchase.date}</span>
+                      <span className="purchase-amount">
+                        R{formatCurrency(purchase.amount)}
+                      </span>
+                    </li>
+                  ))}
+                  <li className="purchase-item">
+                    <span className="purchase-total-text">Total</span>
+                    <span className="purchase-total-num">R{formatCurrency(calculateTotal(customerId))}</span>
+                  </li>
+                </ul>
+              )}
+            </div>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 function CustomerList({ invoiceDictionary, customerIds }) {
   
@@ -206,7 +274,7 @@ const LineChart = ({ data }) => {
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login, set_login] = useState(true);
+  const [login, set_login] = useState(false);
   const [error, setError] = useState(false);
   
   const [jsonContact, setJsonContact] = useState([]);
@@ -274,12 +342,12 @@ function App() {
   const [itemDictionary2, setitemDictionary2]= useState([]);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   const fetchContacts = async () =>{
-    const url = 'http://localhost:8080/new_contacts';
+    const url = 'http://129.151.184.3:8080/new_contacts';
   
     const headers = {
     };
 
-    const response = await fetch(url, { headers })
+    const response = await fetch(url, { mode: "cors",headers })
                     .then(response => response.json())
                     .then(data => {
                       console.log(data);
@@ -290,12 +358,12 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchItems = async () =>{
-    const url = 'http://localhost:8080/new_items';
+    const url = 'http://129.151.184.3:8080/new_items';
   
     const headers = {
     };
 
-    const response = await fetch(url, { headers })
+    const response = await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
                       console.log(data);
@@ -306,12 +374,12 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchPayments = async () =>{
-    const url = 'http://localhost:8080/new_payments';
+    const url = 'http://129.151.184.3:8080/new_payments';
   
     const headers = {
     };
 
-    const response = await fetch(url, { headers })
+    const response = await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
                       console.log(data);
@@ -322,12 +390,12 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchInvoices = async () =>{
-    const url = 'http://localhost:8080/new_invoices';
+    const url = 'http://129.151.184.3:8080/new_invoices';
   
     const headers = {
     };
 
-    const response = await fetch(url, { headers })
+    const response = await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
                       console.log(data);
@@ -337,9 +405,25 @@ function App() {
                     })
                     .catch(error => console.error("Error:", error));
   }
+  const fetchInvoicesLines = async () =>{
+    const url = 'http://129.151.184.3:8080/new_invoice_lines';
+  
+    const headers = {
+    };
+
+    const response = await fetch(url, {mode: "cors", headers })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data);
+                      setJsonInvoiceLines([]);
+                      setJsonInvoiceLines(data);
+                      
+                    })
+                    .catch(error => console.error("Error:", error));
+  }
 
   const handleAddContact=async(uuid,name,customer,supplier)=> {
-    const url = 'http://localhost:8080/add_contact';
+    const url = 'http://129.151.184.3:8080/add_contact';
 
     const headers = {
       'id':uuid,
@@ -348,13 +432,13 @@ function App() {
       'name':name,
     };
 
-    const response = await fetch(url, {headers })
+    const response = await fetch(url, {mode: "cors",headers })
     if (response.status==200){
       fetchContacts();
     }
   }
   const handleAddItem=async(uuid,addItemName,addPurchasePrice,addQuantity,addSalePrice)=> {
-    const url = 'http://localhost:8080/add_item';
+    const url = 'http://129.151.184.3:8080/add_item';
 
     const headers = {
       'id':uuid,
@@ -364,13 +448,13 @@ function App() {
       'sale_unit_price':addSalePrice,
     };
 
-    const response = await fetch(url, {headers })
+    const response = await fetch(url, {mode: "cors",headers })
     if (response.status==200){
       fetchItems();
     }
   }
   const handleAddPayment=async(uuid,contact_id,date,addPayEX,isAddPayIncome,addPayTotal)=> {
-    const url = 'http://localhost:8080/add_payment';
+    const url = 'http://129.151.184.3:8080/add_payment';
 
     const headers = {
       'id':uuid,
@@ -381,14 +465,14 @@ function App() {
       'total':addPayTotal,
     };
 
-    const response = await fetch(url, {headers })
+    const response = await fetch(url, {mode: "cors",headers })
     if (response.status==200){
       console.log('added payment');
       fetchPayments();
     }
   }
   const handleAddInvoice=async(uuid,contact_id,currency,due_date,exchange_rate,is_sale,issue_date,total)=> {
-    const url = 'http://localhost:8080/add_invoice';
+    const url = 'http://129.151.184.3:8080/add_invoice';
 
     const headers = {
       'id':uuid,
@@ -403,13 +487,34 @@ function App() {
       'total':total,
     };
 
-    const response = await fetch(url, {headers })
+    const response = await fetch(url, {mode: "cors",headers })
                             //.then(response => response.json())
                             //.then(data => console.log(data))
                             
                             //.catch(error => console.error("Error:", error));
     if (response.status==200){
       fetchInvoices();
+    }
+  }
+  const handleAddInvoiceLineDatabase=async(uuid,description,invoice_id,item_code,quantity,total)=> {
+    const url = 'http://129.151.184.3:8080/add_invoice_lines';
+
+    const headers = {
+      'id':uuid,
+      'description':description,
+      'invoice_id':invoice_id,
+      'item_code':item_code,
+      'quantity':quantity,
+      'total':total,
+    };
+    console.log('in addinvlines:',headers)
+    const response = await fetch(url, {mode: "cors",headers })
+                            // .then(response => response.json())
+                            // .then(data => console.log(data))
+                            
+                            // .catch(error => console.error("Error:", error));
+    if (response.status==200){
+     fetchInvoicesLines();
     }
   }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,7 +532,7 @@ function App() {
       let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
       
 
-      const url = 'http://localhost:8080/add_item';
+      const url = 'http://129.151.184.3:8080/add_item';
 
       const headers = {
         'id':id,
@@ -437,7 +542,7 @@ function App() {
         'sale_unit_price':sale_unit_price,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -462,7 +567,7 @@ function App() {
       let total=jsonInvoice['body'][i]['total'];
       
 
-      const url = 'http://localhost:8080/add_invoice';
+      const url = 'http://129.151.184.3:8080/add_invoice';
 
       const headers = {
         'id':id,
@@ -478,7 +583,7 @@ function App() {
         'total':total,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -501,7 +606,7 @@ function App() {
       let total=jsonPayment['body'][i]['total'];
       
 
-      const url = 'http://localhost:8080/add_payment';
+      const url = 'http://129.151.184.3:8080/add_payment';
 
       const headers = {
         'id':id,
@@ -512,7 +617,7 @@ function App() {
         'total':total,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -529,7 +634,7 @@ function App() {
       let amount=jsonAlloc['body'][i]['amount'];
       
 
-      const url = 'http://localhost:8080/add_payment_allocation';
+      const url = 'http://129.151.184.3:8080/add_payment_allocation';
 
       const headers = {
         'id':id,
@@ -538,7 +643,7 @@ function App() {
         'amount':amount,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data =>{if(data['status']==500){console.log(data)}} )
         .catch(error => console.error("Error:", error));
@@ -602,7 +707,7 @@ const handleAddItemClose = () => {
 const handleAddItemSubmit = (e) => {
   // Handle form submission and add the contact here
   e.preventDefault();
-  console.log('Name:', addItemName);
+  //console.log('Name:', addItemName);
   let myuuid = uuidv4();
 
   var arrItemNames=[]
@@ -664,7 +769,7 @@ const handleAddPaySubmit = (e) => {
   handleAddPayment(myuuid,contact_id,curr_date,addPayEX,isAddPayIncome,addPayTotal);
   
   
-  setIsAddItemOpen(false);
+  setIsAddPayOpen(false);
 
   
 };
@@ -740,13 +845,13 @@ const calculateTotal = () => {
 const handleSubmitCupcake = (e) => {
   e.preventDefault();
   // Send the invoiceForm data to your API or handle it as required
-  console.log('Submitted Invoice Data:', invoiceForm);
+  //console.log('Submitted Invoice Data:', invoiceForm);
   let myuuid = uuidv4();
   let contact_id='';
   let name=invoiceForm['contact'];
   if(name===""){
     name=jsonContact['body'][0]['name'];
-    console.log('new name:',name);
+    //console.log('new name:',name);
   }
   for(let i=0;i<jsonContact['body'].length;i++){
     if(name===jsonContact['body'][i]['name']){
@@ -764,10 +869,18 @@ const handleSubmitCupcake = (e) => {
   let currentYear = date.getFullYear();
   // we will display the date as DD-MM-YYYY 
   let issue_date = `${currentYear}-${currentMonth}-${currentDay}`;
-  console.log("The current date is " + issue_date); 
-  console.log([myuuid,contact_id,currency,due_date,exchange,is_sale,total,issue_date]);
+  //console.log("The current date is " + issue_date); 
+  //console.log([myuuid,contact_id,currency,due_date,exchange,is_sale,total,issue_date]);
   
   handleAddInvoice(myuuid,contact_id,currency,due_date,exchange,is_sale,issue_date,total);
+  if(is_sale){
+    for(let i=0;i<invoiceForm.invoiceLines.length;i++){
+      let lineuuid = uuidv4();
+      handleAddInvoiceLineDatabase(lineuuid,invoiceForm.invoiceLines[i]['description'],myuuid,invoiceForm.invoiceLines[i]['item'],invoiceForm.invoiceLines[i]['quantity'],invoiceForm.invoiceLines[i]['total']);
+    }
+  }
+  
+  //(uuid,description,invoice_id,item_code,quantity,total)
   closeAddInvoice();
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -796,7 +909,23 @@ const handleSubmitCupcake = (e) => {
 
       //contacts
       useEffect(() => {
-        const url = 'http://localhost:8080/new_contacts';
+        try{
+          const url = 'http://129.151.184.3:8080/new_contacts';
+  
+          const headers = {
+          };
+    
+          fetch(url, {mode: "cors", headers })
+            .then(response => response.json())
+            .then(data => {
+              //console.log(data);
+              setJsonContact(data);
+              //
+            })
+            .catch(error => console.error("Error:", error));
+          }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/contacts';
   
         const headers = {
         };
@@ -809,6 +938,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check contacts
@@ -835,7 +965,23 @@ const handleSubmitCupcake = (e) => {
   
   
       useEffect(() => {//get invoices
-        const url = 'http://localhost:8080/new_invoices';
+        try{
+          const url = 'http://129.151.184.3:8080/new_invoices';
+  
+        const headers = {
+        };
+  
+        fetch(url, {mode: "cors", headers })
+          .then(response => response.json())
+          .then(data => {
+            //console.log(data);
+            setJsonInvoice(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/invoice';
   
         const headers = {
         };
@@ -848,6 +994,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check invoices
@@ -864,7 +1011,23 @@ const handleSubmitCupcake = (e) => {
   
       //payments
       useEffect(() => {
-        const url = 'http://localhost:8080/new_payments';
+        try{
+          const url = 'http://129.151.184.3:8080/new_payments';
+  
+        const headers = {
+        };
+  
+        fetch(url, { mode: "cors",headers })
+          .then(response => response.json())
+          .then(data => {
+            //console.log(data);
+            setJsonPayment(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/payment';
   
         const headers = {
         };
@@ -877,6 +1040,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check payments
@@ -892,7 +1056,23 @@ const handleSubmitCupcake = (e) => {
       }, [jsonPayment]);
   
       useEffect(() => {//get items
-        const url = 'http://localhost:8080/new_items';
+        try{
+          const url = 'http://129.151.184.3:8080/new_items';
+  
+        const headers = {
+        };
+  
+        fetch(url, {mode: "cors", headers })
+          .then(response => response.json())
+          .then(data => {
+            //console.log(data);
+            setJsonItem(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/item';
   
         const headers = {
         };
@@ -905,6 +1085,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check items
@@ -948,7 +1129,23 @@ const handleSubmitCupcake = (e) => {
       }, [jsonItem]);
 
       useEffect(() => {//get invoice lines
-        const url = 'http://localhost:8080/new_invoice_lines';
+        try{
+          const url = 'http://129.151.184.3:8080/new_invoice_lines';
+  
+        const headers = {
+        };
+  
+        fetch(url, {mode: "cors", headers })
+          .then(response => response.json())
+          .then(data => {
+            //console.log(data);
+            setJsonInvoiceLines(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/invoice-lines';
   
         const headers = {
         };
@@ -961,6 +1158,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
       
       useEffect(() => {//check invoice lines
@@ -977,7 +1175,23 @@ const handleSubmitCupcake = (e) => {
       }, [jsonInvoiceLines]);
 
       useEffect(() => {
-        const url = 'http://localhost:8080/new_payment_allocations';
+        try{
+          const url = 'http://129.151.184.3:8080/new_payment_allocations';
+  
+        const headers = {
+        };
+  
+        fetch(url, {mode: "cors", headers })
+          .then(response => response.json())
+          .then(data => {
+            //console.log(data);
+            setJsonAlloc(data);
+            //
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        catch{
+          const url = 'https://hackathon.syftanalytics.com/api/payment-allocations';
   
         const headers = {
         };
@@ -990,6 +1204,7 @@ const handleSubmitCupcake = (e) => {
             //
           })
           .catch(error => console.error("Error:", error));
+        }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {
@@ -1039,6 +1254,7 @@ const handleSubmitCupcake = (e) => {
                 id="username"
                 name="username"
                 value={username}
+                defaultValue="admin"
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
@@ -1050,12 +1266,14 @@ const handleSubmitCupcake = (e) => {
                 id="password"
                 name="password"
                 value={password}
+                defaultValue="admin"
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="form-group">
               <button type="submit">Login</button>
+              <h3>username and password are admin</h3>
             </div>
           </form>
         </div>
@@ -1068,13 +1286,13 @@ const handleSubmitCupcake = (e) => {
 
 
     function handleClickContacts() {
-      const url = 'http://localhost:8080/new_contacts';
+      const url = 'http://129.151.184.3:8080/new_contacts';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -1082,26 +1300,26 @@ const handleSubmitCupcake = (e) => {
     }
 
     function handleClickItems() {
-      const url = 'http://localhost:8080/new_items';
+      const url = 'http://129.151.184.3:8080/new_items';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
         console.log('current jsonItem:',jsonItem['body']);
       }
     function handleClickInvoice() {
-      const url = 'http://localhost:8080/new_invoices';
+      const url = 'http://129.151.184.3:8080/new_invoices';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -1109,39 +1327,39 @@ const handleSubmitCupcake = (e) => {
     }
 
     function handleClickInvoiceLines() {
-      const url = 'http://localhost:8080/new_invoice_lines';
+      const url = 'http://129.151.184.3:8080/new_invoice_lines';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
         console.log('current jsonInvoiceLines:',jsonInvoiceLines['body']);
     }
     function handleClickPayments() {
-      const url = 'http://localhost:8080/new_payments';
+      const url = 'http://129.151.184.3:8080/new_payments';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
         console.log('current jsonPayment:',jsonPayment['body']);
     }
     function handleClickPaymentAllocations() {
-      const url = 'http://localhost:8080/new_payment_allocations';
+      const url = 'http://129.151.184.3:8080/new_payment_allocations';
 
       const headers = {
         'id':999192342112,
       };
 
-      fetch(url, {headers })
+      fetch(url, {mode: "cors",headers })
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error("Error:", error));
@@ -1447,27 +1665,7 @@ const handleSubmitCupcake = (e) => {
         }
         
       }
-      //console.log(arrInv2);
-      //console.log('arrInv2.length',arrInv2.length);
       
-      /*
-      0: "2c1e8fdc-5469-4451-82a0-8575c88eb5ad"
-      1: "1d179948-3ce6-4fc1-9dd1-bb5e43de4f05"
-      2: "1268c90c-5bc0-4c9d-a665-5e52dffcaac0"
-      3: "dd85825d-fb11-4c61-addb-5afcf620fe94"
-      4: "70571ab5-077c-4b0a-8091-b6850626fb5a"
-      5: "933d4aff-ee8c-4288-a8ea-49b6dec67aa3"
-      6: "c5ee8382-90cd-4150-ac4a-05d34337bdc4"
-      7: "0882a2d4-e586-40b4-90d3-fb54723d44a8"
-      8: "a863e4d2-c0ff-46f6-98ce-a5b6fc73233c"
-      9: "e3088711-c9e5-4899-ade2-caecb3e399bd"
-      10: "c1667e06-5710-4ceb-a5ec-2e7d57b292ed"
-      */
-      
-      //console.log('jsonInvoice["body"]:',jsonInvoice['body']);
-      if (arrInv.includes('2461b75e-3118-45a1-a1b1-31d2d6368fe9')){
-        //console.log('the invoice is in there!!!');
-      }//jsonInvoice['body'].length
       for(let i =0;i<jsonInvoice['body'].length;i++){
         const invoice=jsonInvoice['body'][i];
         //console.log('invoice.invoice_id',invoice['id']);
@@ -1517,7 +1715,79 @@ const handleSubmitCupcake = (e) => {
       //console.log('counter:',counter);
       return [groupedData,totalinv,groupedDataCosts,totalcost];
     };
+    const groupOutgoingMoney = () => {//Copy of above function but used to check something else in backend
+      const monthTotals = {};
+      var totalOut=0;
+      
+      for(let i =0;i<jsonPayment['body'].length;i++){
+        const payment=jsonPayment['body'][i];
+        //console.log('invoice.invoice_id',invoice['id']);
+        
+        const date = new Date(payment.date);
+        const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
+        //const exchange = parseFloat(payment.exchange_rate);
+        const total = parseFloat(payment.total);
+        const isIncome=payment.is_income;
+        
+        if(!isIncome){
 
+          totalOut+=total;
+          if (monthTotals[monthYear]) {
+            monthTotals[monthYear].total += total;
+          } else {
+            monthTotals[monthYear] = {
+              monthYear,
+              total,
+            };
+          }
+          
+        }
+      }
+      // Convert the grouped data object to an array
+      const groupedData = Object.values(monthTotals);
+      //setTotalInv(totalinv);
+      //console.log('counter:',counter);
+      return [groupedData,totalOut];
+    };
+    const getOverDue= () => {
+      var arrIds=[]
+      const overdueDictionary = {};
+      var tempDict={}
+      const current_date=new Date();
+      var newDate;
+      //console.log(current_date);
+      for (let i=0;i<jsonInvoice['body'].length;i++){
+        newDate=new Date(jsonInvoice['body'][i].due_date);
+        
+        if(newDate.getTime()<current_date.getTime() &&(!jsonInvoice['body'][i].paid) &&((parseFloat(jsonInvoice['body'][i].amount_due)>0))){
+          //console.log('smaller');
+        
+          //console.log('not smaller',jsonInvoice['body'][i].id)
+          tempDict={}
+          let contactname=''
+          let contact_id=jsonInvoice['body'][i].contact_id;
+          for (let j=0;j<jsonContact['body'].length;j++){
+            if(contact_id==jsonContact['body'][j]['id']){
+              contactname=jsonContact['body'][j]['name'];
+            }
+          }
+          const monthYear = `${newDate.getDay() + 1}-${newDate.getMonth() + 1}-${newDate.getFullYear()}`;
+          const purchase = {
+            date: monthYear,
+            
+            amount: Math.round(jsonInvoice['body'][i].amount_due * 100) / 100,
+          };
+          if (!overdueDictionary[contact_id]) {
+            overdueDictionary[contact_id] = { name: contactname, purchases: [] };
+            arrIds.push(contact_id)
+          }
+          overdueDictionary[contact_id].purchases.push(purchase);
+          //console.log(overdueDictionary[contact_id])
+        }
+      }
+      return [overdueDictionary,arrIds];
+     // return onlySalesDict;
+    };
     if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false ||refreshAlloc==false ||refreshInvLines==false){
       
       return(
@@ -1552,10 +1822,26 @@ const handleSubmitCupcake = (e) => {
       const groupedCupcakeCost = getSalesData[2];
       const finalCupcakeCost=getSalesData[3];
       
+      const totalOutgoing=groupOutgoingMoney();
+      const outgoingMonths=totalOutgoing[0];
+      const outgoingTotal=totalOutgoing[1];
+      getOverDue();
       //getNewContacts();
       //console.log(groupedInvoices);
 
       const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
+        const [aMonth, aYear] = a.monthYear.split('-');
+        const [bMonth, bYear] = b.monthYear.split('-');
+        
+        // Compare years first
+        if (aYear !== bYear) {
+          return aYear - bYear;
+        }
+        
+        // If years are the same, compare months
+        return aMonth - bMonth;
+      });
+      const sortedGroupedOutgoingPayments = outgoingMonths.sort((a, b) => {
         const [aMonth, aYear] = a.monthYear.split('-');
         const [bMonth, bYear] = b.monthYear.split('-');
         
@@ -1609,6 +1895,10 @@ const handleSubmitCupcake = (e) => {
       const getInvoiceDict = createInvoiceDictionary(jsonContact['body'], jsonInvoice['body']);
       const invoiceDictionary=getInvoiceDict[0];
       const customerIds=getInvoiceDict[1];
+
+      const getoverdueAccounts = getOverDue();
+      const overDueAccountsList=getoverdueAccounts[0];
+      const overDueAccountsIds=getoverdueAccounts[1];
 
       const getItemDict = createItemDictionary(Items);
       const itemDictionary=getItemDict[0];
@@ -1964,6 +2254,13 @@ const handleSubmitCupcake = (e) => {
                     <LineChart   data={sortedGroupedCupcakeCost} />
                     </div>
                 </div>
+                <div className="box">
+                  <h2>Monthly Outgoing Money</h2>
+                  <p>Total Outgoing Money: {Math.round(outgoingTotal)}</p>
+                  <div className="graph-div">
+                    <LineChart   data={sortedGroupedOutgoingPayments} />
+                    </div>
+                </div>
                 
                 
               </div>
@@ -1971,7 +2268,11 @@ const handleSubmitCupcake = (e) => {
               <div className="boxContact">
                 <CustomerList invoiceDictionary={invoiceDictionary} customerIds={customerIds} />
               </div>
-              <hr className="horiLine"></hr> 
+              <hr className="horiLine"></hr>
+              <div className="boxContact">
+                <OverDueList invoiceDictionary={overDueAccountsList} customerIds={overDueAccountsIds} />
+              </div>
+              <hr className="horiLine"></hr>  
               <div><button className='add-button' onClick={handleAddItemClick}>Add Item</button></div>
               <div className="boxContact">
               <ItemList itemDictionary={itemDictionary} itemIds={itemIds} />
