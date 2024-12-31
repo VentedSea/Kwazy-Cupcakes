@@ -1,7 +1,7 @@
 // node-postgres connection to database
 const { Client } = require('pg')
 const client = new Client({
-    host: '',
+    host: 'localhost',
     port: 5432,
     database: 'cupcakedb',
     user: 'richard',

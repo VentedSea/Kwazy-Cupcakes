@@ -140,6 +140,7 @@ async function getItems(res){//items
     res.send(text);
 }
 app.get('/new_items', function (req, res) {
+    console.log('get_newitems')
     getItems(res);
 });
 async function getPayments(res){//payments
@@ -147,6 +148,7 @@ async function getPayments(res){//payments
     res.send(text);
 }
 app.get('/new_payments', function (req, res) {
+    console.log('get_newpayments')
     getPayments(res);
 });
 async function getPaymentAllocations(res){//payment allocations

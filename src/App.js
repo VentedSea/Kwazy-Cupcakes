@@ -342,7 +342,7 @@ function App() {
   const [itemDictionary2, setitemDictionary2]= useState([]);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   const fetchContacts = async () =>{
-    const url = 'http://129.151.184.3:8080/new_contacts';
+    const url = 'http://129.151.178.159:8080/new_contacts';
   
     const headers = {
     };
@@ -358,7 +358,7 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchItems = async () =>{
-    const url = 'http://129.151.184.3:8080/new_items';
+    const url = 'http://129.151.178.159:8080/new_items';
   
     const headers = {
     };
@@ -374,7 +374,7 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchPayments = async () =>{
-    const url = 'http://129.151.184.3:8080/new_payments';
+    const url = 'http://129.151.178.159:8080/new_payments';
   
     const headers = {
     };
@@ -390,7 +390,7 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchInvoices = async () =>{
-    const url = 'http://129.151.184.3:8080/new_invoices';
+    const url = 'http://129.151.178.159:8080/new_invoices';
   
     const headers = {
     };
@@ -406,7 +406,7 @@ function App() {
                     .catch(error => console.error("Error:", error));
   }
   const fetchInvoicesLines = async () =>{
-    const url = 'http://129.151.184.3:8080/new_invoice_lines';
+    const url = 'http://129.151.178.159:8080/new_invoice_lines';
   
     const headers = {
     };
@@ -423,7 +423,7 @@ function App() {
   }
 
   const handleAddContact=async(uuid,name,customer,supplier)=> {
-    const url = 'http://129.151.184.3:8080/add_contact';
+    const url = 'http://129.151.178.159:8080/add_contact';
 
     const headers = {
       'id':uuid,
@@ -438,7 +438,7 @@ function App() {
     }
   }
   const handleAddItem=async(uuid,addItemName,addPurchasePrice,addQuantity,addSalePrice)=> {
-    const url = 'http://129.151.184.3:8080/add_item';
+    const url = 'http://129.151.178.159:8080/add_item';
 
     const headers = {
       'id':uuid,
@@ -454,7 +454,7 @@ function App() {
     }
   }
   const handleAddPayment=async(uuid,contact_id,date,addPayEX,isAddPayIncome,addPayTotal)=> {
-    const url = 'http://129.151.184.3:8080/add_payment';
+    const url = 'http://129.151.178.159:8080/add_payment';
 
     const headers = {
       'id':uuid,
@@ -472,7 +472,7 @@ function App() {
     }
   }
   const handleAddInvoice=async(uuid,contact_id,currency,due_date,exchange_rate,is_sale,issue_date,total)=> {
-    const url = 'http://129.151.184.3:8080/add_invoice';
+    const url = 'http://129.151.178.159:8080/add_invoice';
 
     const headers = {
       'id':uuid,
@@ -497,7 +497,7 @@ function App() {
     }
   }
   const handleAddInvoiceLineDatabase=async(uuid,description,invoice_id,item_code,quantity,total)=> {
-    const url = 'http://129.151.184.3:8080/add_invoice_lines';
+    const url = 'http://129.151.178.159:8080/add_invoice_lines';
 
     const headers = {
       'id':uuid,
@@ -532,7 +532,7 @@ function App() {
       let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
       
 
-      const url = 'http://129.151.184.3:8080/add_item';
+      const url = 'http://129.151.178.159:8080/add_item';
 
       const headers = {
         'id':id,
@@ -567,7 +567,7 @@ function App() {
       let total=jsonInvoice['body'][i]['total'];
       
 
-      const url = 'http://129.151.184.3:8080/add_invoice';
+      const url = 'http://129.151.178.159:8080/add_invoice';
 
       const headers = {
         'id':id,
@@ -606,7 +606,7 @@ function App() {
       let total=jsonPayment['body'][i]['total'];
       
 
-      const url = 'http://129.151.184.3:8080/add_payment';
+      const url = 'http://129.151.178.159:8080/add_payment';
 
       const headers = {
         'id':id,
@@ -634,7 +634,7 @@ function App() {
       let amount=jsonAlloc['body'][i]['amount'];
       
 
-      const url = 'http://129.151.184.3:8080/add_payment_allocation';
+      const url = 'http://129.151.178.159:8080/add_payment_allocation';
 
       const headers = {
         'id':id,
@@ -910,7 +910,7 @@ const handleSubmitCupcake = (e) => {
       //contacts
       useEffect(() => {
         try{
-          const url = 'http://129.151.184.3:8080/new_contacts';
+          const url = 'http://129.151.178.159:8080/new_contacts';
   
           const headers = {
           };
@@ -962,11 +962,11 @@ const handleSubmitCupcake = (e) => {
         }
         
       }, [jsonContact]);
-  
-  
+
+      
       useEffect(() => {//get invoices
         try{
-          const url = 'http://129.151.184.3:8080/new_invoices';
+          const url = 'http://129.151.178.159:8080/new_invoices';
   
         const headers = {
         };
@@ -1012,7 +1012,7 @@ const handleSubmitCupcake = (e) => {
       //payments
       useEffect(() => {
         try{
-          const url = 'http://129.151.184.3:8080/new_payments';
+          const url = 'http://129.151.178.159:8080/new_payments';
   
         const headers = {
         };
@@ -1057,7 +1057,7 @@ const handleSubmitCupcake = (e) => {
   
       useEffect(() => {//get items
         try{
-          const url = 'http://129.151.184.3:8080/new_items';
+          const url = 'http://129.151.178.159:8080/new_items';
   
         const headers = {
         };
@@ -1130,7 +1130,7 @@ const handleSubmitCupcake = (e) => {
 
       useEffect(() => {//get invoice lines
         try{
-          const url = 'http://129.151.184.3:8080/new_invoice_lines';
+          const url = 'http://129.151.178.159:8080/new_invoice_lines';
   
         const headers = {
         };
@@ -1176,7 +1176,7 @@ const handleSubmitCupcake = (e) => {
 
       useEffect(() => {
         try{
-          const url = 'http://129.151.184.3:8080/new_payment_allocations';
+          const url = 'http://129.151.178.159:8080/new_payment_allocations';
   
         const headers = {
         };
@@ -1286,7 +1286,7 @@ const handleSubmitCupcake = (e) => {
 
 
     function handleClickContacts() {
-      const url = 'http://129.151.184.3:8080/new_contacts';
+      const url = 'http://129.151.178.159:8080/new_contacts';
 
       const headers = {
         'id':999192342112,
@@ -1300,7 +1300,7 @@ const handleSubmitCupcake = (e) => {
     }
 
     function handleClickItems() {
-      const url = 'http://129.151.184.3:8080/new_items';
+      const url = 'http://129.151.178.159:8080/new_items';
 
       const headers = {
         'id':999192342112,
@@ -1313,7 +1313,7 @@ const handleSubmitCupcake = (e) => {
         console.log('current jsonItem:',jsonItem['body']);
       }
     function handleClickInvoice() {
-      const url = 'http://129.151.184.3:8080/new_invoices';
+      const url = 'http://129.151.178.159:8080/new_invoices';
 
       const headers = {
         'id':999192342112,
@@ -1327,7 +1327,7 @@ const handleSubmitCupcake = (e) => {
     }
 
     function handleClickInvoiceLines() {
-      const url = 'http://129.151.184.3:8080/new_invoice_lines';
+      const url = 'http://129.151.178.159:8080/new_invoice_lines';
 
       const headers = {
         'id':999192342112,
@@ -1340,7 +1340,7 @@ const handleSubmitCupcake = (e) => {
         console.log('current jsonInvoiceLines:',jsonInvoiceLines['body']);
     }
     function handleClickPayments() {
-      const url = 'http://129.151.184.3:8080/new_payments';
+      const url = 'http://129.151.178.159:8080/new_payments';
 
       const headers = {
         'id':999192342112,
@@ -1353,7 +1353,7 @@ const handleSubmitCupcake = (e) => {
         console.log('current jsonPayment:',jsonPayment['body']);
     }
     function handleClickPaymentAllocations() {
-      const url = 'http://129.151.184.3:8080/new_payment_allocations';
+      const url = 'http://129.151.178.159:8080/new_payment_allocations';
 
       const headers = {
         'id':999192342112,
