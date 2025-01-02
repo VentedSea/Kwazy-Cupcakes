@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import { useState, useEffect } from 'react';
 import myImage from './images/cupcake.png';
@@ -15,6 +15,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import React from 'react';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -27,8 +28,8 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-function OverDueList({ invoiceDictionary, customerIds }) {
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
+const OverDueList = ({ invoiceDictionary, customerIds }) => {
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
   const [isListExpanded, setListExpanded] = useState(false);
 
   const handleCustomerSelect = (customerId) => {
@@ -101,7 +102,7 @@ function CustomerList({ invoiceDictionary, customerIds }) {
   
 
 
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
   const [isListExpanded, setListExpanded] = useState(false);
 
   const handleCustomerSelect = (customerId) => {
@@ -174,7 +175,7 @@ function ItemList({ itemDictionary, itemIds }) {
   
 
 
-  const [selectedItem, setSelectedItem] = useState([]);
+  const [selectedItem, setSelectedItem] = useState<string[]>([]);
   const [isListExpanded, setListExpanded] = useState(false);
 
   const handleCustomerSelect = (itemId) => {
@@ -244,7 +245,7 @@ const LineChart = ({ data }) => {
       },
     ],
   };
-  const options = {
+  const options: any = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -272,14 +273,13 @@ const LineChart = ({ data }) => {
 
 
 
-//<! --className="App-logo"!>
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [login, set_login] = useState(false);
   const [error, setError] = useState(false);
   
-  const [jsonContact, setJsonContact] = useState([]);
+  const [jsonContact, setJsonContact] = useState<any>([]);
   const [jsonInvoice, setJsonInvoice] = useState([]);
   const [jsonInvoiceLines, setJsonInvoiceLines] = useState([]);
   const [refreshInvLines, setRefreshInvLines] = useState(false);
@@ -287,18 +287,15 @@ function App() {
   const [refreshInv, setRefreshInv] = useState(false);
   const [jsonPayment, setJsonPayment] = useState([]);
   const [refreshPay, setRefreshPay] = useState(false);
-  const [jsonItem, setJsonItem] = useState([]);
+  const [jsonItem, setJsonItem] = useState<any>([]);
   const [refreshItem, setRefreshItem] = useState(false);
   const [jsonAlloc, setJsonAlloc] = useState([]);
   const [refreshAlloc, setRefreshAlloc] = useState(false);
 
-  const [totalInv, setTotalInv] = useState([0]);
-  const [totalPay, setTotalPay] = useState([0]);
-  const [salesData,setSalesData]= useState([]);
-  const [jsonAddData, setAddData] = useState([]);
+  const [salesData,setSalesData]= useState<any>([]);
 
   const [isAddContactOpen, setIsAddContactOpen] = useState(false);
-  const [addName,setAddName]=useState(['']);
+  const [addName,setAddName]=useState('');
   const [addIsCustomer,setAddIsCustomer]=useState(false);
   const [addIsSupplier,setAddIsSupplier]=useState(false);
   const [isNameExists, setIsNameExists] = useState(false);
@@ -308,16 +305,16 @@ function App() {
   const [both_forList, setBoth_forList] = useState([]);
 
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
-  const [addItemName,setAddItemName]=useState(['']);
-  const [addPurchasePrice,setAddPurchasePrice]=useState(['']);
-  const [addQuantity,setAddQuantity]=useState(['']);
-  const [addSalePrice,setAddSalePrice]=useState(['']);
+  const [addItemName,setAddItemName]=useState('');
+  const [addPurchasePrice,setAddPurchasePrice]=useState('');
+  const [addQuantity,setAddQuantity]=useState('');
+  const [addSalePrice,setAddSalePrice]=useState('');
 
   const [isAddPayOpen, setIsAddPayOpen] = useState(false);
-  const [addPayName,setAddPayName]=useState(['']);
-  const [addPayEX,setAddPayEX]=useState(['']);
+  const [addPayName,setAddPayName]=useState('');
+  const [addPayEX,setAddPayEX]=useState('');
   const [isAddPayIncome, setIsAddPayIncome] = useState(false);
-  const [addPayTotal,setAddPayTotal]=useState(['']);
+  const [addPayTotal,setAddPayTotal]=useState('');
 
   const [isAddInvoiceOpen, setIsAddInvoiceOpen] = useState(false);
   const [invoiceForm, setInvoiceForm] = useState({
@@ -330,7 +327,7 @@ function App() {
       {
         description: '',
         quantity: '',
-        total: 0,
+        total: '0',
         item: 'No item',
       },
     ],
@@ -338,22 +335,18 @@ function App() {
   
 
 
-  const [contactNames, setContactNames] = useState([]); // Array of contact names
-  const [items, setItems] = useState([]); // Array of items
-  //const [itemDictonaryDropdown,setitemDictonaryDropdown]=useState([]);
-  const [itemDictionary2, setitemDictionary2]= useState([]);
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const [contactNames, setContactNames] = useState<any[]>([]);
+  const [itemDictionary2, setItemDictionary2]= useState<any[]>([]);
+  
   const fetchContacts = async () =>{
     const url = `${apiUrl}/new_contacts`;
   
     const headers = {
     };
 
-    const response = await fetch(url, { mode: "cors",headers })
+    await fetch(url, { mode: "cors",headers })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data);
-                      setJsonContact([]);
                       setJsonContact(data);
                       
                     })
@@ -365,10 +358,9 @@ function App() {
     const headers = {
     };
 
-    const response = await fetch(url, {mode: "cors", headers })
+    await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data);
                       setJsonItem([]);
                       setJsonItem(data);
                       
@@ -381,10 +373,9 @@ function App() {
     const headers = {
     };
 
-    const response = await fetch(url, {mode: "cors", headers })
+     await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data);
                       setJsonPayment([]);
                       setJsonPayment(data);
                       
@@ -397,10 +388,9 @@ function App() {
     const headers = {
     };
 
-    const response = await fetch(url, {mode: "cors", headers })
+    await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data);
                       setJsonInvoice([]);
                       setJsonInvoice(data);
                       
@@ -413,10 +403,9 @@ function App() {
     const headers = {
     };
 
-    const response = await fetch(url, {mode: "cors", headers })
+    await fetch(url, {mode: "cors", headers })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data);
                       setJsonInvoiceLines([]);
                       setJsonInvoiceLines(data);
                       
@@ -435,7 +424,7 @@ function App() {
     };
 
     const response = await fetch(url, {mode: "cors",headers })
-    if (response.status==200){
+    if (response.status===200){
       fetchContacts();
     }
   }
@@ -451,7 +440,7 @@ function App() {
     };
 
     const response = await fetch(url, {mode: "cors",headers })
-    if (response.status==200){
+    if (response.status===200){
       fetchItems();
     }
   }
@@ -468,15 +457,14 @@ function App() {
     };
 
     const response = await fetch(url, {mode: "cors",headers })
-    if (response.status==200){
-      console.log('added payment');
+    if (response.status===200){
       fetchPayments();
     }
   }
   const handleAddInvoice=async(uuid,contact_id,currency,due_date,exchange_rate,is_sale,issue_date,total)=> {
     const url = `${apiUrl}/add_invoice`;
 
-    const headers = {
+    const headers: any = {
       'id':uuid,
       'amount_due':total,
       'contact_id':contact_id,
@@ -490,11 +478,7 @@ function App() {
     };
 
     const response = await fetch(url, {mode: "cors",headers })
-                            //.then(response => response.json())
-                            //.then(data => console.log(data))
-                            
-                            //.catch(error => console.error("Error:", error));
-    if (response.status==200){
+    if (response.status===200){
       fetchInvoices();
     }
   }
@@ -509,152 +493,129 @@ function App() {
       'quantity':quantity,
       'total':total,
     };
-    console.log('in addinvlines:',headers)
     const response = await fetch(url, {mode: "cors",headers })
-                            // .then(response => response.json())
-                            // .then(data => console.log(data))
-                            
-                            // .catch(error => console.error("Error:", error));
-    if (response.status==200){
+    if (response.status===200){
      fetchInvoicesLines();
     }
   }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  function handleClickItemsAll() {
-    //console.log('jsonContact["body"].length',jsonContact['body'].length);
-    //console.log(jsonContact['body'][0]['id']);
-    //console.log(jsonContact['body']);
-    for (let i=0;i<jsonItem['body'].length;i++){
-      //console.log(i)
-      let id=jsonItem['body'][i]['id'];
-      let name=jsonItem['body'][i]['name'];
-      let purchase_unit_price=jsonItem['body'][i]['purchase_unit_price'];
-      let quantity_on_hand=jsonItem['body'][i]['quantity_on_hand'];
-      let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
+  //#region unused functions
+
+  // function handleClickItemsAll() {
+  //   for (let i=0;i<jsonItem['body'].length;i++){
+  //     let id=jsonItem['body'][i]['id'];
+  //     let name=jsonItem['body'][i]['name'];
+  //     let purchase_unit_price=jsonItem['body'][i]['purchase_unit_price'];
+  //     let quantity_on_hand=jsonItem['body'][i]['quantity_on_hand'];
+  //     let sale_unit_price=jsonItem['body'][i]['sale_unit_price'];
       
 
-      const url = `${apiUrl}/add_item`;
+  //     const url = `${apiUrl}/add_item`;
 
-      const headers = {
-        'id':id,
-        'name':name,
-        'purchase_unit_price':purchase_unit_price,
-        'quantity_on_hand':quantity_on_hand,
-        'sale_unit_price':sale_unit_price,
-      };
+  //     const headers = {
+  //       'id':id,
+  //       'name':name,
+  //       'purchase_unit_price':purchase_unit_price,
+  //       'quantity_on_hand':quantity_on_hand,
+  //       'sale_unit_price':sale_unit_price,
+  //     };
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
+  //     fetch(url, {mode: "cors",headers })
+  //       .then(response => response.json())
+  //       .catch(error => console.error("Error:", error));
 
-      }
-    }
-  function handleClickInvoiceAll() {
+  //   }
+  // }
+  // function handleClickInvoiceAll() {
     
-    console.log(jsonInvoice['body'][0]);
-    for (let i=0;i<jsonInvoice['body'].length;i++){
-      //console.log(i)
-      let id=jsonInvoice['body'][i]['id'];
-      let amount_due=jsonInvoice['body'][i]['amount_due'];
-      let contact_id=jsonInvoice['body'][i]['contact_id'];
-      let currency=jsonInvoice['body'][i]['currency'];
-      let due_date=jsonInvoice['body'][i]['due_date'];
-      let exchange_rate=jsonInvoice['body'][i]['exchange_rate'];
-      let is_sale=jsonInvoice['body'][i]['is_sale'];
-      let issue_date=jsonInvoice['body'][i]['issue_date'];
-      let paid=jsonInvoice['body'][i]['paid'];
-      let paid_date=jsonInvoice['body'][i]['paid_date'];
-      let total=jsonInvoice['body'][i]['total'];
+  //   for (let i=0;i<jsonInvoice['body'].length;i++){
+  //     let id=jsonInvoice['body'][i]['id'];
+  //     let amount_due=jsonInvoice['body'][i]['amount_due'];
+  //     let contact_id=jsonInvoice['body'][i]['contact_id'];
+  //     let currency=jsonInvoice['body'][i]['currency'];
+  //     let due_date=jsonInvoice['body'][i]['due_date'];
+  //     let exchange_rate=jsonInvoice['body'][i]['exchange_rate'];
+  //     let is_sale=jsonInvoice['body'][i]['is_sale'];
+  //     let issue_date=jsonInvoice['body'][i]['issue_date'];
+  //     let paid=jsonInvoice['body'][i]['paid'];
+  //     let paid_date=jsonInvoice['body'][i]['paid_date'];
+  //     let total=jsonInvoice['body'][i]['total'];
       
 
-      const url = `${apiUrl}/add_invoice`;
+  //     const url = `${apiUrl}/add_invoice`;
 
-      const headers = {
-        'id':id,
-        'amount_due':amount_due,
-        'contact_id':contact_id,
-        'currency':currency,
-        'due_date':due_date,
-        'exchange_rate':exchange_rate,
-        'is_sale':is_sale,
-        'issue_date':issue_date,
-        'paid':paid,
-        'paid_date':paid_date,
-        'total':total,
-      };
+  //     const headers = {
+  //       'id':id,
+  //       'amount_due':amount_due,
+  //       'contact_id':contact_id,
+  //       'currency':currency,
+  //       'due_date':due_date,
+  //       'exchange_rate':exchange_rate,
+  //       'is_sale':is_sale,
+  //       'issue_date':issue_date,
+  //       'paid':paid,
+  //       'paid_date':paid_date,
+  //       'total':total,
+  //     };
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
+  //     fetch(url, {mode: "cors",headers })
+  //       .then(response => response.json())
+  //       .catch(error => console.error("Error:", error));
 
-      }
-      console.log('jsonInvoice["body"].length',jsonInvoice['body'].length);
-  }
+  //   }
+  // }
 
-  function handleClickInvoiceLinesAll() {
-    console.log('jsonInvoiceLines["body"]:',jsonInvoiceLines['body'])
-  }
-  function handleClickPaymentsAll() {
-    for (let i=0;i<jsonPayment['body'].length;i++){
-      //console.log(i)
-      let id=jsonPayment['body'][i]['id'];
-      let contact_id=jsonPayment['body'][i]['contact_id'];
-      let date=jsonPayment['body'][i]['date'];
-      let exchange_rate=jsonPayment['body'][i]['exchange_rate'];
-      let is_income=jsonPayment['body'][i]['is_income'];
-      let total=jsonPayment['body'][i]['total'];
+  // function handleClickPaymentsAll() {
+  //   for (let i=0;i<jsonPayment['body'].length;i++){
+  //     let id=jsonPayment['body'][i]['id'];
+  //     let contact_id=jsonPayment['body'][i]['contact_id'];
+  //     let date=jsonPayment['body'][i]['date'];
+  //     let exchange_rate=jsonPayment['body'][i]['exchange_rate'];
+  //     let is_income=jsonPayment['body'][i]['is_income'];
+  //     let total=jsonPayment['body'][i]['total'];
       
 
-      const url = `${apiUrl}/add_payment`;
+  //     const url = `${apiUrl}/add_payment`;
 
-      const headers = {
-        'id':id,
-        'contact_id':contact_id,
-        'payment_date':date,
-        'exchange_rate':exchange_rate,
-        'is_income':is_income,
-        'total':total,
-      };
+  //     const headers = {
+  //       'id':id,
+  //       'contact_id':contact_id,
+  //       'payment_date':date,
+  //       'exchange_rate':exchange_rate,
+  //       'is_income':is_income,
+  //       'total':total,
+  //     };
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
+  //     fetch(url, {mode: "cors",headers })
+  //       .then(response => response.json())
+  //       .catch(error => console.error("Error:", error));
 
-      }
-      console.log('jsonPayment["data"]',jsonPayment['body']);
-  }
-  function handleClickPaymentAllocationsAll() {
-    for (let i=0;i<jsonAlloc['body'].length;i++){
-      //console.log(i)
-      let id=jsonAlloc['body'][i]['invoice_id'];
-      let pay_id=jsonAlloc['body'][i]['payment_id'];
-      let date=jsonAlloc['body'][i]['date'];
-      let amount=jsonAlloc['body'][i]['amount'];
+  //   }
+  // }
+  // function handleClickPaymentAllocationsAll() {
+  //   for (let i=0;i<jsonAlloc['body'].length;i++){
+  //     let id=jsonAlloc['body'][i]['invoice_id'];
+  //     let pay_id=jsonAlloc['body'][i]['payment_id'];
+  //     let date=jsonAlloc['body'][i]['date'];
+  //     let amount=jsonAlloc['body'][i]['amount'];
       
 
-      const url = `${apiUrl}/add_payment_allocation`;
+  //     const url = `${apiUrl}/add_payment_allocation`;
 
-      const headers = {
-        'id':id,
-        'pay_id':pay_id,
-        'payment_date':date,
-        'amount':amount,
-      };
+  //     const headers = {
+  //       'id':id,
+  //       'pay_id':pay_id,
+  //       'payment_date':date,
+  //       'amount':amount,
+  //     };
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data =>{if(data['status']==500){console.log(data)}} )
-        .catch(error => console.error("Error:", error));
+  //     fetch(url, {mode: "cors",headers })
+  //       .then(response => response.json())
+  //       .catch(error => console.error("Error:", error));
 
-      }
-      // console.log('jsonAlloc["data"].length',jsonAlloc['body'].length);
-      // console.log('jsonAlloc["data"]',jsonAlloc['body']);
-      // console.log('jsonInvoices["data"]',jsonInvoice['body']);
-  }
+  //   }
+  // }
+  //#endregion unused functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleAddContactClick = () => {
@@ -669,24 +630,18 @@ function App() {
   const handleAddContactSubmit = (e) => {
     // Handle form submission and add the contact here
     e.preventDefault();
-    console.log('Name:', addName);
-    console.log('Is Customer:', addIsCustomer);
-    console.log('Is Supplier:', addIsSupplier);
-    let myuuid = uuidv4();
+    let myUuid = uuidv4();
 
-    var arrNames=[]
+    const arrNames: string[] = [];
     for(let i =0;i<jsonContact['body'].length;i++){
       arrNames.push(jsonContact['body'][i]['name']);
     }
-    console.log(arrNames);
     if(arrNames.includes(addName)){
-      console.log('already inside');
       setIsNameExists(true);
     }
     else{
       setIsNameExists(false);
-      console.log('Your UUID is: ' + myuuid);
-      handleAddContact(myuuid,addName,addIsCustomer,addIsSupplier);
+      handleAddContact(myUuid,addName,addIsCustomer,addIsSupplier);
       
       
       setIsAddContactOpen(false);
@@ -709,22 +664,18 @@ const handleAddItemClose = () => {
 const handleAddItemSubmit = (e) => {
   // Handle form submission and add the contact here
   e.preventDefault();
-  //console.log('Name:', addItemName);
-  let myuuid = uuidv4();
+  let myUuid = uuidv4();
 
-  var arrItemNames=[]
+  const arrItemNames: string[] = [];
   for(let i =0;i<jsonItem['body'].length;i++){
     arrItemNames.push(jsonItem['body'][i]['name']);
   }
-  console.log(arrItemNames);
   if(arrItemNames.includes(addItemName)){
-    console.log('already inside');
     setIsNameExists(true);
   }
   else{
     setIsNameExists(false);
-    console.log('Your UUID is: ' + myuuid);
-    handleAddItem(myuuid,addItemName,addPurchasePrice,addQuantity,addSalePrice);
+    handleAddItem(myUuid,addItemName,addPurchasePrice,addQuantity,addSalePrice);
     
     
     setIsAddItemOpen(false);
@@ -743,17 +694,15 @@ const closeAddPayment = () => {
 const handleAddPaySubmit = (e) => {
   // Handle form submission and add the contact here
   e.preventDefault();
-  console.log('Name:', addItemName);
-  let myuuid = uuidv4();
+  let myUuid = uuidv4();
 
   let contact_id='';
   let name=addPayName;
-  if(name==''){
+  if(name===''){
     name=jsonContact['body'][0]['name'];
-    console.log('pay name:',name);
   }
   for(let i=0;i<jsonContact['body'].length;i++){
-    if(name==jsonContact['body'][i]['name']){
+    if(name===jsonContact['body'][i]['name']){
       contact_id=jsonContact['body'][i]['id'];
     }
   }
@@ -765,10 +714,7 @@ const handleAddPaySubmit = (e) => {
   // we will display the date as DD-MM-YYYY 
   let curr_date = `${currentYear}-${currentMonth}-${currentDay}`;
 
-  console.log('addpayname',addPayName);
-  console.log(myuuid,name,contact_id,addPayEX,isAddPayIncome,addPayTotal);
-  //console.log('Your UUID is: ' + myuuid);
-  handleAddPayment(myuuid,contact_id,curr_date,addPayEX,isAddPayIncome,addPayTotal);
+  handleAddPayment(myUuid,contact_id,curr_date,addPayEX,isAddPayIncome,addPayTotal);
   
   
   setIsAddPayOpen(false);
@@ -787,23 +733,19 @@ const closeAddInvoice = () => {
 
 const handleInvoiceLineChange = (index, field, value) => {
   // Create a copy of the invoiceForm object to avoid mutating the state directly
-  console.log(index,field,value)
   const updatedInvoiceForm = { ...invoiceForm };
   // Access the specific invoice line by index
   const invoiceLine = updatedInvoiceForm.invoiceLines[index];
-  console.log(invoiceLine);
   // Update the field of the invoice line with the new value
   invoiceLine[field] = value;
 
   // Recalculate the total for the updated invoice line if applicable
   if (field === 'quantity' || field === 'item') {
-    const quantity = parseFloat(invoiceLine.quantity || 0);
+    const quantity = parseFloat(invoiceLine.quantity || '0');
 
     // Check if the item exists in the dictionary by name
     const itemName = invoiceLine.item;
     const item = itemDictionary2.find((item) => item.name === itemName);
-    console.log('itemname',itemName)
-    console.log('item',item);
     if (item) {
       invoiceLine.total = (quantity * item.price).toFixed(2);
     } else {
@@ -825,7 +767,7 @@ const handleAddInvoiceLine = () => {
         description: '',
         quantity: '',
         item: itemDictionary2[0]['name'], // Default item
-        total: 0, // Default total
+        total: '0', // Default total
       },
     ],
   }));
@@ -840,20 +782,18 @@ const handleRemoveInvoiceLine = (index) => {
 };
 
 const calculateTotal = () => {
-  return invoiceForm.invoiceLines.reduce((total, line) => total + parseFloat(line.total || 0), 0).toFixed(2);
+  return invoiceForm.invoiceLines.reduce((total, line) => total + parseFloat(line.total), 0).toFixed(2);
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Handle form submission (adjust as needed)
 const handleSubmitCupcake = (e) => {
   e.preventDefault();
   // Send the invoiceForm data to your API or handle it as required
-  //console.log('Submitted Invoice Data:', invoiceForm);
-  let myuuid = uuidv4();
+  let myUuid = uuidv4();
   let contact_id='';
   let name=invoiceForm['contact'];
   if(name===""){
     name=jsonContact['body'][0]['name'];
-    //console.log('new name:',name);
   }
   for(let i=0;i<jsonContact['body'].length;i++){
     if(name===jsonContact['body'][i]['name']){
@@ -871,29 +811,23 @@ const handleSubmitCupcake = (e) => {
   let currentYear = date.getFullYear();
   // we will display the date as DD-MM-YYYY 
   let issue_date = `${currentYear}-${currentMonth}-${currentDay}`;
-  //console.log("The current date is " + issue_date); 
-  //console.log([myuuid,contact_id,currency,due_date,exchange,is_sale,total,issue_date]);
   
-  handleAddInvoice(myuuid,contact_id,currency,due_date,exchange,is_sale,issue_date,total);
+  handleAddInvoice(myUuid,contact_id,currency,due_date,exchange,is_sale,issue_date,total);
   if(is_sale){
     for(let i=0;i<invoiceForm.invoiceLines.length;i++){
-      let lineuuid = uuidv4();
-      handleAddInvoiceLineDatabase(lineuuid,invoiceForm.invoiceLines[i]['description'],myuuid,invoiceForm.invoiceLines[i]['item'],invoiceForm.invoiceLines[i]['quantity'],invoiceForm.invoiceLines[i]['total']);
+      let lineUuid = uuidv4();
+      handleAddInvoiceLineDatabase(lineUuid,invoiceForm.invoiceLines[i]['description'],myUuid,invoiceForm.invoiceLines[i]['item'],invoiceForm.invoiceLines[i]['quantity'],invoiceForm.invoiceLines[i]['total']);
     }
   }
   
-  //(uuid,description,invoice_id,item_code,quantity,total)
   closeAddInvoice();
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     function setSales(){
-      const onlySalesDict = [];
-      var totalinv=0;
-      //console.log('jsonInvoiceLines',jsonInvoiceLines['body']);
+      const onlySalesDict: any = [];
       jsonInvoiceLines['body'].forEach((invoiceLine) => {
         const item_code=invoiceLine.item_code;
-        if (item_code=='null'){
-          //console.log('item is null');
+        if (item_code==='null'){
         }
         else{
           const currSale={}
@@ -904,9 +838,7 @@ const handleSubmitCupcake = (e) => {
         }
         
       });
-      //console.log('onlySalesDict',onlySalesDict);
       setSalesData(onlySalesDict);
-      //return onlySalesDict;
     }
 
       //contacts
@@ -920,7 +852,6 @@ const handleSubmitCupcake = (e) => {
           fetch(url, {mode: "cors", headers })
             .then(response => response.json())
             .then(data => {
-              //console.log(data);
               setJsonContact(data);
               //
             })
@@ -935,20 +866,15 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonContact(data);
-            //
           })
           .catch(error => console.error("Error:", error));
         }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check contacts
-        console.log('json',jsonContact); // This will log the updated state
-        var arrContacts=[]
-        //console.log('!isArray',!Array.isArray(jsonContact))
+        const arrContacts: any[] = [];
         if (!Array.isArray(jsonContact)){
-          //console.log("set to true");
           setRefreshCon(true);
           setCustomer_forList([]);
           setCustomer_forList(jsonContact['body'].filter(contact => contact.is_customer &&(!contact.is_supplier)));
@@ -960,7 +886,6 @@ const handleSubmitCupcake = (e) => {
             arrContacts.push({'name':jsonContact['body'][i]['name']});
           }
           setContactNames(arrContacts);
-          //console.log('setcustomers',customer_forList);;
         }
         
       }, [jsonContact]);
@@ -976,7 +901,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, {mode: "cors", headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonInvoice(data);
             //
           })
@@ -991,22 +915,16 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonInvoice(data);
-            //
           })
           .catch(error => console.error("Error:", error));
         }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check invoices
-        //console.log('json',jsonContact); // This will log the updated state
         
-        //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonInvoice)){
-          //console.log("set to true");
           setRefreshInv(true);
-          //console.log('json[data]',jsonInvoice['body']);;
         }
         
       }, [jsonInvoice]);
@@ -1022,7 +940,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { mode: "cors",headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonPayment(data);
             //
           })
@@ -1037,7 +954,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonPayment(data);
             //
           })
@@ -1046,13 +962,9 @@ const handleSubmitCupcake = (e) => {
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check payments
-        //console.log('json',jsonContact); // This will log the updated state
         
-        //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonPayment)){
-          //console.log("set to true");
           setRefreshPay(true);
-          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonPayment]);
@@ -1067,7 +979,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, {mode: "cors", headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonItem(data);
             //
           })
@@ -1082,7 +993,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonItem(data);
             //
           })
@@ -1091,28 +1001,20 @@ const handleSubmitCupcake = (e) => {
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {//check items
-        //console.log('json',jsonContact); // This will log the updated state
-        var arrItemNames=[]
-        var itemDict={}
-        //console.log('!isArray',!Array.isArray(jsonContact))
+        const arrItemNames: any[] = [];
         if (!Array.isArray(jsonItem)){
-          //console.log("set to true");
           setRefreshItem(true);
           
-          //console.log('jsonpayment[data]',jsonPayment['body']);;
           for (let i =0;i<jsonItem['body'].length;i++){
-            itemDict={}
+            const itemDict = {};
             itemDict['name']=jsonItem['body'][i]['name'];
             itemDict['price']=jsonItem['body'][i]['sale_unit_price'];
             arrItemNames.push(itemDict);
           }
           
-          //setItems(arrItemNames);
-          //console.log('jsonItem:',jsonItem)
-          console.log('items name price',arrItemNames);
-          setitemDictionary2(arrItemNames);
+          setItemDictionary2(arrItemNames);
           setInvoiceForm({
-            contact: '', // Selected contact
+            contact: '',
             currency: 'GBP',
             exchangeRate: '',
             dueDate: '',
@@ -1140,7 +1042,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, {mode: "cors", headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonInvoiceLines(data);
             //
           })
@@ -1155,7 +1056,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonInvoiceLines(data);
             //
           })
@@ -1164,14 +1064,10 @@ const handleSubmitCupcake = (e) => {
       }, []); // Empty dependency array to run this effect only once
       
       useEffect(() => {//check invoice lines
-        //console.log('json',jsonContact); // This will log the updated state
         
-        //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonInvoiceLines)){
-          //console.log("set to true");
           setRefreshInvLines(true);
           setSales();
-          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonInvoiceLines]);
@@ -1186,7 +1082,6 @@ const handleSubmitCupcake = (e) => {
         fetch(url, {mode: "cors", headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonAlloc(data);
             //
           })
@@ -1201,22 +1096,16 @@ const handleSubmitCupcake = (e) => {
         fetch(url, { headers })
           .then(response => response.json())
           .then(data => {
-            //console.log(data);
             setJsonAlloc(data);
-            //
           })
           .catch(error => console.error("Error:", error));
         }
       }, []); // Empty dependency array to run this effect only once
   
       useEffect(() => {
-        //console.log('json',jsonContact); // This will log the updated state
         
-        //console.log('!isArray',!Array.isArray(jsonContact))
         if (!Array.isArray(jsonAlloc)){
-          //console.log("set to true");
           setRefreshAlloc(true);
-          //console.log('jsonpayment[data]',jsonPayment['body']);;
         }
         
       }, [jsonAlloc]);
@@ -1224,22 +1113,19 @@ const handleSubmitCupcake = (e) => {
 
 
 
-  if (login == false){
+  if (login === false){
     
 
     // Function to handle form submission
     const handleLogin = (e) => {
         e.preventDefault();
         // Implement your login logic here with username and password
-        console.log('Username:', username);
-        console.log('Password:', password);
-        if(username=='admin' && password=='admin'){
+        if(username==='admin' && password==='admin'){
           set_login(true);
           setError(false); // Reset the error state on successful login
         } else {
           setError(true); // Set error state on failed login
         }
-        // Replace the above console.log with your authentication code
     };
     return(
       <div className="AppLogin">
@@ -1285,136 +1171,119 @@ const handleSubmitCupcake = (e) => {
   }
   else{
     
+    //#region unused functions
 
+    // function handleClickContacts() {
+    //   const url = `${apiUrl}/new_contacts`;
 
-    function handleClickContacts() {
-      const url = `${apiUrl}/new_contacts`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonContact:',jsonContact);
-    }
+    // function handleClickItems() {
+    //   const url = `${apiUrl}/new_items`;
 
-    function handleClickItems() {
-      const url = `${apiUrl}/new_items`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
+    // function handleClickInvoice() {
+    //   const url = `${apiUrl}/new_invoices`;
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonItem:',jsonItem['body']);
-      }
-    function handleClickInvoice() {
-      const url = `${apiUrl}/new_invoices`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonInvoice:',jsonInvoice['body']);
-    }
+    // function handleClickInvoiceLines() {
+    //   const url = `${apiUrl}/new_invoice_lines`;
 
-    function handleClickInvoiceLines() {
-      const url = `${apiUrl}/new_invoice_lines`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
+    // function handleClickPayments() {
+    //   const url = `${apiUrl}/new_payments`;
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonInvoiceLines:',jsonInvoiceLines['body']);
-    }
-    function handleClickPayments() {
-      const url = `${apiUrl}/new_payments`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
+    // function handleClickPaymentAllocations() {
+    //   const url = `${apiUrl}/new_payment_allocations`;
 
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonPayment:',jsonPayment['body']);
-    }
-    function handleClickPaymentAllocations() {
-      const url = `${apiUrl}/new_payment_allocations`;
+    //   const headers: any = {
+    //     'id':999192342112,
+    //   };
 
-      const headers = {
-        'id':999192342112,
-      };
-
-      fetch(url, {mode: "cors",headers })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Error:", error));
-        console.log('current jsonAlloc:',jsonAlloc['body']);
-    }
+    //   fetch(url, {mode: "cors",headers })
+    //     .then(response => response.json())
+    //     .catch(error => console.error("Error:", error));
+    // }
 
 
     
-    const groupInvoicesByMonth = () => {
-      const monthTotals = {};
-      var totalinv=0;
-      jsonInvoice['body'].forEach((invoice) => {
-        const dueDate = new Date(invoice.due_date);
-        const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-        const exchange = parseFloat(invoice.exchange_rate);
-        const total = parseFloat(invoice.total)/exchange;
-        //console.log('invoice.total:',invoice.total);
-        //console.log('invoice.exchange_rate:',invoice.exchange_rate);
-        //console.log('total:',total);
-        const isSale=invoice.is_sale;
-        if(isSale){
-          totalinv+=total;
-          if (monthTotals[monthYear]) {
-            monthTotals[monthYear].total += total;
-          } else {
-            monthTotals[monthYear] = {
-              monthYear,
-              total,
-            };
-          }
-          //console.log('is sale:',invoice);
-        }
-        // else{
-        // }
-        // console.log('is not sale:',invoice);
+    // const groupInvoicesByMonth = () => {
+    //   const monthTotals = {};
+    //   let totalInv=0;
+    //   jsonInvoice['body'].forEach((invoice) => {
+    //     const dueDate = new Date(invoice.due_date);
+    //     const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+    //     const exchange = parseFloat(invoice.exchange_rate);
+    //     const total = parseFloat(invoice.total)/exchange;
+    //     const isSale=invoice.is_sale;
+    //     if(isSale){
+    //       totalInv+=total;
+    //       if (monthTotals[monthYear]) {
+    //         monthTotals[monthYear].total += total;
+    //       } else {
+    //         monthTotals[monthYear] = {
+    //           monthYear,
+    //           total,
+    //         };
+    //       }
+    //     }
+    //     // else{
+    //     // }
         
-      });
-      // Convert the grouped data object to an array
-      const groupedData = Object.values(monthTotals);
-      //setTotalInv(totalinv);
-      return [groupedData,totalinv];
-    };
+    //   });
+    //   // Convert the grouped data object to an array
+    //   const groupedData = Object.values(monthTotals);
+    //   //setTotalInv(totalInv);
+    //   return [groupedData,totalInv];
+    // };
+
+    //#endregion unused functions
 
     const groupPaymentsByMonth = () => {
       const monthTotals = {};
-      var totalpay=0;
-      var arrInv=[]
-      var arrPay=[] 
+      let totalPay=0;
+      const arrInv: any[] = [];
+      const arrPay: any[] = []; 
       for(let i =0;i<salesData.length;i++){
-        //console.log('salesData[i]',salesData[0]);
         arrInv.push(salesData[i].invoice_id);
       }
-      //console.log('arrInv.length',arrInv.length);
       let counter=0;
       for (let i=0;i<jsonAlloc['body'].length;i++){
         if(arrInv.includes(jsonAlloc['body'][i]['invoice_id'])){
@@ -1422,24 +1291,18 @@ const handleSubmitCupcake = (e) => {
           arrPay.push(jsonAlloc['body'][i]['payment_id']);
         }
       }
-      //console.log('arrPay.length',arrPay.length);
-      //console.log(counter);
-      //console.log(jsonPayment['body'])
       counter=0;
       jsonPayment['body'].forEach((payment) => {
         let flag=true;
-        // if(arrPay.includes(payment.id)){
-        //   flag=true;
-        //   counter+=1;
-        // }
-        if(flag==true){
+      
+        if(flag===true){
           const dueDate = new Date(payment.date);
           const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
           const exchange = parseFloat(payment.exchange_rate);
           const total = parseFloat(payment.total)/exchange; 
           const isIncome=payment.is_income;
           if (isIncome){
-          totalpay+=total;
+          totalPay+=total;
             if (monthTotals[monthYear]) {
               monthTotals[monthYear].total += total;
             } else {
@@ -1448,23 +1311,18 @@ const handleSubmitCupcake = (e) => {
                 total,
               };
             }
-            //console.log('is income:',payment);
           }
         }
-        // else{
-        //   console.log('is not income:',payment);
-        // }
+
       });
-      //console.log('paycounter:',counter);
       // Convert the grouped data object to an array
       const groupedData = Object.values(monthTotals);
-      //setTotalPay(totalpay);
-      return [groupedData,totalpay];
+      return [groupedData,totalPay];
     };
 
     function createInvoiceDictionary(customers, invoices) {
       const invoiceDictionary = {};
-      var arrIds=[]
+      const arrIds: any[] = [];
       // Create a mapping of customer IDs to their names
       const customerNameMap = {};
       customers.forEach((customer) => {
@@ -1490,12 +1348,11 @@ const handleSubmitCupcake = (e) => {
     
         invoiceDictionary[customerId].purchases.push(purchase);
       });
-      //console.log('arrIds',arrIds)
       return [invoiceDictionary,arrIds];
     }
     
     function createItemDictionary(itemData) {
-      var arrItems=[]
+      const arrItems: any[] = [];
       const itemDictionary = {};
     
       // Group invoices by customer ID
@@ -1517,152 +1374,134 @@ const handleSubmitCupcake = (e) => {
     
         itemDictionary[itemId].info.push(itemInfo);
       });
-      //console.log('arrIds',arrItems);
-      //console.log(itemDictionary);
       return [itemDictionary,arrItems];
     }
 
     //Payments
-    const groupPayAlloc = () => {
-      const allocDict = {};
-      var arrAlloc=[];
-      var totalAlloc=0;
-      //console.log(jsonPayment['body'])
-      jsonAlloc['body'].forEach((Alloc) => {
-        const dueDate = new Date(Alloc.date);
-        const monthYear = `${dueDate.getDay() + 1}-${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-        const invoice_id = Alloc.invoice_id;
-        const payment_id = Alloc.payment_id;
-        const amount = parseFloat(Alloc.amount); 
+    // const groupPayAlloc = () => {
+    //   const allocDict = {};
+    //   const arrAlloc: any[] = [];
+    //   let totalAlloc=0;
+    //   jsonAlloc['body'].forEach((Alloc) => {
+    //     const dueDate = new Date(Alloc.date);
+    //     const monthYear = `${dueDate.getDay() + 1}-${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+    //     const invoice_id = Alloc.invoice_id;
+    //     const payment_id = Alloc.payment_id;
+    //     const amount = parseFloat(Alloc.amount); 
         
-        //arrAlloc.push([invoice_id,payment_id,amount]);
+    //     //arrAlloc.push([invoice_id,payment_id,amount]);
 
         
-          if (allocDict[payment_id]) {
-            //console.log('doubled allocated payment',payment_id);
+    //       if (allocDict[payment_id]) {
               
-          } else {
-            allocDict[payment_id] = {
-              invoice_id,
-              amount,
-            };
-            arrAlloc.push(payment_id);
-          }
+    //       } else {
+    //         allocDict[payment_id] = {
+    //           invoice_id,
+    //           amount,
+    //         };
+    //         arrAlloc.push(payment_id);
+    //       }
       
-      });
+    //   });
 
-      // Convert the grouped data object to an array
-      // const groupedData = Object.values(allocDict);
+    //   // Convert the grouped data object to an array
+    //   // const groupedData = Object.values(allocDict);
       
-      // return [groupedData,totalAlloc];
-      return [allocDict,arrAlloc];
-    };
+    //   // return [groupedData,totalAlloc];
+    //   return [allocDict,arrAlloc];
+    // };
     
-    const getOnlySales = () => {
-      const onlySalesDict = [];
-      var totalinv=0;
-      //console.log('jsonInvoiceLines',jsonInvoiceLines['body']);
-      jsonInvoiceLines['body'].forEach((invoiceLine) => {
-        const item_code=invoiceLine.item_code;
-        if (item_code=='null'){
-          //console.log('item is null');
-        }
-        else{
-          const currSale={}
-          currSale['invoice_id'] = invoiceLine.invoice_id;
-          currSale['description']=invoiceLine.description;
-          currSale['total']=invoiceLine.total;
-          onlySalesDict.push(currSale);
-        }
+    // const getOnlySales = () => {
+    //   const onlySalesDict: any[] = [];
+    //   let totalInv=0;
+    //   jsonInvoiceLines['body'].forEach((invoiceLine) => {
+    //     const item_code=invoiceLine.item_code;
+    //     if (item_code==='null'){
+    //     }
+    //     else{
+    //       const currSale={}
+    //       currSale['invoice_id'] = invoiceLine.invoice_id;
+    //       currSale['description']=invoiceLine.description;
+    //       currSale['total']=invoiceLine.total;
+    //       onlySalesDict.push(currSale);
+    //     }
         
-      });
-      //console.log('onlySalesDict',onlySalesDict);
-      return onlySalesDict;
-    };
+    //   });
+    //   return onlySalesDict;
+    // };
 
-    const groupSalesByMonth = () => {
-      const monthTotals = {};
-      var totalinv=0;
-      var counter=0;
-      var arrInv=[]
-      for(let i =0;i<salesData.length;i++){
-        //console.log('salesData[i]',salesData[0]);
-        arrInv.push(salesData[i].invoice_id);
-      }
+    // const groupSalesByMonth = () => {
+    //   const monthTotals = {};
+    //   let totalInv=0;
+    //   let counter=0;
+    //   const arrInv: any[] = [];
+    //   for(let i =0;i<salesData.length;i++){
+    //     arrInv.push(salesData[i].invoice_id);
+    //   }
       
-      /*
-      0: "2c1e8fdc-5469-4451-82a0-8575c88eb5ad"
-      1: "1d179948-3ce6-4fc1-9dd1-bb5e43de4f05"
-      2: "1268c90c-5bc0-4c9d-a665-5e52dffcaac0"
-      3: "dd85825d-fb11-4c61-addb-5afcf620fe94"
-      4: "70571ab5-077c-4b0a-8091-b6850626fb5a"
-      5: "933d4aff-ee8c-4288-a8ea-49b6dec67aa3"
-      6: "c5ee8382-90cd-4150-ac4a-05d34337bdc4"
-      7: "0882a2d4-e586-40b4-90d3-fb54723d44a8"
-      8: "a863e4d2-c0ff-46f6-98ce-a5b6fc73233c"
-      9: "e3088711-c9e5-4899-ade2-caecb3e399bd"
-      10: "c1667e06-5710-4ceb-a5ec-2e7d57b292ed"
-      */
+    //   /*
+    //   0: "2c1e8fdc-5469-4451-82a0-8575c88eb5ad"
+    //   1: "1d179948-3ce6-4fc1-9dd1-bb5e43de4f05"
+    //   2: "1268c90c-5bc0-4c9d-a665-5e52dffcaac0"
+    //   3: "dd85825d-fb11-4c61-addb-5afcf620fe94"
+    //   4: "70571ab5-077c-4b0a-8091-b6850626fb5a"
+    //   5: "933d4aff-ee8c-4288-a8ea-49b6dec67aa3"
+    //   6: "c5ee8382-90cd-4150-ac4a-05d34337bdc4"
+    //   7: "0882a2d4-e586-40b4-90d3-fb54723d44a8"
+    //   8: "a863e4d2-c0ff-46f6-98ce-a5b6fc73233c"
+    //   9: "e3088711-c9e5-4899-ade2-caecb3e399bd"
+    //   10: "c1667e06-5710-4ceb-a5ec-2e7d57b292ed"
+    //   */
       
-      //console.log('jsonInvoice["body"]:',jsonInvoice['body']);
-      //if (arrInv.includes('2461b75e-3118-45a1-a1b1-31d2d6368fe9')){
-        //console.log('the invoice is in there!!!');
-      //}//jsonInvoice['body'].length
-      for(let i =0;i<jsonInvoice['body'].length;i++){
-        const invoice=jsonInvoice['body'][i];
-        //console.log('invoice.invoice_id',invoice['id']);
-        var flag=false;
-        if(arrInv.includes(invoice.id)){
-          flag=true;
-          counter+=1;
-        }
+    //   //if (arrInv.includes('2461b75e-3118-45a1-a1b1-31d2d6368fe9')){
+    //   //}//jsonInvoice['body'].length
+    //   for(let i =0;i<jsonInvoice['body'].length;i++){
+    //     const invoice=jsonInvoice['body'][i];
+    //     let flag=false;
+    //     if(arrInv.includes(invoice.id)){
+    //       flag=true;
+    //       counter+=1;
+    //     }
         
-        if (flag==true){
-          const dueDate = new Date(invoice.due_date);
-          const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
-          const exchange = parseFloat(invoice.exchange_rate);
-          const total = parseFloat(invoice.total)/exchange;
-          //console.log('invoice.total:',invoice.total);
-          //console.log('invoice.exchange_rate:',invoice.exchange_rate);
-          //console.log('total:',total);
-          //const isSale=invoice.is_sale;
-          //if(isSale){
-            totalinv+=total;
-            if (monthTotals[monthYear]) {
-              monthTotals[monthYear].total += total;
-            } else {
-              monthTotals[monthYear] = {
-                monthYear,
-                total,
-              };
-            }
-        }
-      };
-      // Convert the grouped data object to an array
-      const groupedData = Object.values(monthTotals);
-      //setTotalInv(totalinv);
-      //console.log('counter:',counter);
-      return [groupedData,totalinv];
-    };
+    //     if (flag===true){
+    //       const dueDate = new Date(invoice.due_date);
+    //       const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
+    //       const exchange = parseFloat(invoice.exchange_rate);
+    //       const total = parseFloat(invoice.total)/exchange;
+    //       //const isSale=invoice.is_sale;
+    //       //if(isSale){
+    //         totalInv+=total;
+    //         if (monthTotals[monthYear]) {
+    //           monthTotals[monthYear].total += total;
+    //         } else {
+    //           monthTotals[monthYear] = {
+    //             monthYear,
+    //             total,
+    //           };
+    //         }
+    //     }
+    //   };
+    //   // Convert the grouped data object to an array
+    //   const groupedData = Object.values(monthTotals);
+    //   //setTotalInv(totalInv);
+    //   return [groupedData,totalInv];
+    // };
 
     const groupSalesByMonth2 = () => {//Copy of above function but used to check something else in backend
       const monthTotals = {};
-      var totalinv=0;
+      let totalInv=0;
       const monthTotalsPay = {};
-      var totalcost=0;
-      var counter=0;
-      var arrInv=[]
-      var arrInv2=[]
+      let totalCost=0;
+      let counter=0;
+      const arrInv: any[] = [];
+      const arrInv2: any[] = [];
       for(let i =0;i<salesData.length;i++){
-        //console.log('salesData[i]',salesData[0]);
         arrInv.push(salesData[i].invoice_id);
       }
-      //console.log('arrInv.length',arrInv.length);
       arrInv2.push(arrInv[0]);
       for(let i =0;i<arrInv.length;i++){
-        if (arrInv2[arrInv2.length-1]==arrInv[i]){}
+        if (arrInv2[arrInv2.length-1]===arrInv[i]){}
         else{
-          //console.log('salesData[i]',salesData[0]);
         arrInv2.push(arrInv[i]);
         }
         
@@ -1670,24 +1509,20 @@ const handleSubmitCupcake = (e) => {
       
       for(let i =0;i<jsonInvoice['body'].length;i++){
         const invoice=jsonInvoice['body'][i];
-        //console.log('invoice.invoice_id',invoice['id']);
-        var flag=false;
+        let flag=false;
         if(arrInv2.includes(invoice.id)){
           flag=true;
           counter+=1;
         }
         
-        if (flag==true){
+        if (flag===true){
           const dueDate = new Date(invoice.due_date);
           const monthYear = `${dueDate.getMonth() + 1}-${dueDate.getFullYear()}`;
           const exchange = parseFloat(invoice.exchange_rate);
           const total = parseFloat(invoice.total)/exchange;
-          //console.log('invoice.total:',invoice.total);
-          //console.log('invoice.exchange_rate:',invoice.exchange_rate);
-          //console.log('total:',total);
           const isSale=invoice.is_sale;
           if(isSale){
-            totalinv+=total;
+            totalInv+=total;
             if (monthTotals[monthYear]) {
               monthTotals[monthYear].total += total;
             } else {
@@ -1698,7 +1533,7 @@ const handleSubmitCupcake = (e) => {
             }
           }
           else{
-            totalcost+=total;
+            totalCost+=total;
             if (monthTotalsPay[monthYear]) {
               monthTotalsPay[monthYear].total += total;
             } else {
@@ -1713,17 +1548,15 @@ const handleSubmitCupcake = (e) => {
       // Convert the grouped data object to an array
       const groupedData = Object.values(monthTotals);
       const groupedDataCosts = Object.values(monthTotalsPay);
-      //setTotalInv(totalinv);
-      //console.log('counter:',counter);
-      return [groupedData,totalinv,groupedDataCosts,totalcost];
+      //setTotalInv(totalInv);
+      return [groupedData,totalInv,groupedDataCosts,totalCost];
     };
     const groupOutgoingMoney = () => {//Copy of above function but used to check something else in backend
       const monthTotals = {};
-      var totalOut=0;
+      let totalOut=0;
       
       for(let i =0;i<jsonPayment['body'].length;i++){
         const payment=jsonPayment['body'][i];
-        //console.log('invoice.invoice_id',invoice['id']);
         
         const date = new Date(payment.date);
         const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
@@ -1747,30 +1580,25 @@ const handleSubmitCupcake = (e) => {
       }
       // Convert the grouped data object to an array
       const groupedData = Object.values(monthTotals);
-      //setTotalInv(totalinv);
-      //console.log('counter:',counter);
+      //setTotalInv(totalInv);
       return [groupedData,totalOut];
     };
     const getOverDue= () => {
-      var arrIds=[]
+      const arrIds: any[] = [];
       const overdueDictionary = {};
-      var tempDict={}
+      let tempDict={}
       const current_date=new Date();
-      var newDate;
-      //console.log(current_date);
       for (let i=0;i<jsonInvoice['body'].length;i++){
-        newDate=new Date(jsonInvoice['body'][i].due_date);
+        const newDate=new Date(jsonInvoice['body'][i].due_date);
         
         if(newDate.getTime()<current_date.getTime() &&(!jsonInvoice['body'][i].paid) &&((parseFloat(jsonInvoice['body'][i].amount_due)>0))){
-          //console.log('smaller');
         
-          //console.log('not smaller',jsonInvoice['body'][i].id)
           tempDict={}
-          let contactname=''
+          let contactName=''
           let contact_id=jsonInvoice['body'][i].contact_id;
           for (let j=0;j<jsonContact['body'].length;j++){
-            if(contact_id==jsonContact['body'][j]['id']){
-              contactname=jsonContact['body'][j]['name'];
+            if(contact_id===jsonContact['body'][j]['id']){
+              contactName=jsonContact['body'][j]['name'];
             }
           }
           const monthYear = `${newDate.getDay() + 1}-${newDate.getMonth() + 1}-${newDate.getFullYear()}`;
@@ -1780,17 +1608,15 @@ const handleSubmitCupcake = (e) => {
             amount: Math.round(jsonInvoice['body'][i].amount_due * 100) / 100,
           };
           if (!overdueDictionary[contact_id]) {
-            overdueDictionary[contact_id] = { name: contactname, purchases: [] };
+            overdueDictionary[contact_id] = { name: contactName, purchases: [] };
             arrIds.push(contact_id)
           }
           overdueDictionary[contact_id].purchases.push(purchase);
-          //console.log(overdueDictionary[contact_id])
         }
       }
       return [overdueDictionary,arrIds];
-     // return onlySalesDict;
     };
-    if (refreshCon==false || refreshInv==false || refreshPay==false ||refreshItem==false ||refreshAlloc==false ||refreshInvLines==false){
+    if (refreshCon===false || refreshInv===false || refreshPay===false ||refreshItem===false ||refreshAlloc===false ||refreshInvLines===false){
       
       return(
         <div className="App" >
@@ -1803,33 +1629,20 @@ const handleSubmitCupcake = (e) => {
     }
 
     else{
-      //const getInvData=groupInvoicesByMonth();
-      //const groupedInvoices = getInvData[0];
-      //const finalInvTotal=getInvData[1];
+
       const getPayData=groupPaymentsByMonth();
-      const groupedPayments = getPayData[0];
-      const finalPayTotal=getPayData[1];
-      const allocDictList=groupPayAlloc();
-      const allocDict = allocDictList[0];
-      const alloclist=allocDictList[1];
-      //console.log('allocDict',allocDict);
-      //console.log('pay len',jsonPayment['body'].length)
-      //console.log('inv len',jsonInvoice['body'].length)
-      //console.log(salesData);
-      //const onlySalesDict=getOnlySales();
-      //setSalesData(onlySalesDict);
+      const groupedPayments: any = getPayData[0];
+      const finalPayTotal: any=getPayData[1];
       const getSalesData=groupSalesByMonth2();
-      const groupedInvoices = getSalesData[0];
-      const finalInvTotal=getSalesData[1];
-      const groupedCupcakeCost = getSalesData[2];
-      const finalCupcakeCost=getSalesData[3];
+      const groupedInvoices: any = getSalesData[0];
+      const finalInvTotal: any=getSalesData[1];
+      const groupedCupcakeCost: any = getSalesData[2];
+      const finalCupcakeCost: any=getSalesData[3];
       
-      const totalOutgoing=groupOutgoingMoney();
-      const outgoingMonths=totalOutgoing[0];
-      const outgoingTotal=totalOutgoing[1];
+      const totalOutgoing: any=groupOutgoingMoney();
+      const outgoingMonths: any =totalOutgoing[0];
+      const outgoingTotal: any=totalOutgoing[1];
       getOverDue();
-      //getNewContacts();
-      //console.log(groupedInvoices);
 
       const sortedGroupedInvoices = groupedInvoices.sort((a, b) => {
         const [aMonth, aYear] = a.monthYear.split('-');
@@ -1868,7 +1681,6 @@ const handleSubmitCupcake = (e) => {
         // If years are the same, compare months
         return aMonth - bMonth;
       });
-      //console.log(sortedGroupedInvoices)
 
       const sortedGroupedPayments = groupedPayments.sort((a, b) => {
         const [aMonth, aYear] = a.monthYear.split('-');
@@ -1882,30 +1694,21 @@ const handleSubmitCupcake = (e) => {
         // If years are the same, compare months
         return aMonth - bMonth;
       });
-      //console.log('sortedGroupedPayments',sortedGroupedPayments)
 
-      
-
-      //const customers = jsonContact['body'].filter(contact => contact.is_customer &&(!contact.is_supplier));
-      //const suppliers = jsonContact['body'].filter(contact => contact.is_supplier &&(!contact.is_customer));
-      //const bothCustAndSup=jsonContact['body'].filter(contact => contact.is_supplier && contact.is_customer);
-      //const others = jsonContact['body'].filter(contact => !contact.is_customer && !contact.is_supplier);
 
       const Items = jsonItem['body'];
-      const listInvoices=jsonInvoice['body'];
 
       const getInvoiceDict = createInvoiceDictionary(jsonContact['body'], jsonInvoice['body']);
       const invoiceDictionary=getInvoiceDict[0];
       const customerIds=getInvoiceDict[1];
 
-      const getoverdueAccounts = getOverDue();
-      const overDueAccountsList=getoverdueAccounts[0];
-      const overDueAccountsIds=getoverdueAccounts[1];
+      const getOverdueAccounts = getOverDue();
+      const overDueAccountsList=getOverdueAccounts[0];
+      const overDueAccountsIds=getOverdueAccounts[1];
 
       const getItemDict = createItemDictionary(Items);
       const itemDictionary=getItemDict[0];
       const itemIds=getItemDict[1];
-      //console.log('invoiceDictionary',invoiceDictionary); 
 
       return (
         <div className="App" >
@@ -2030,7 +1833,6 @@ const handleSubmitCupcake = (e) => {
             {isAddInvoiceOpen && (
               <div className="overlay">
                 <div className="popup">
-                  {/* Your invoice input form here */}
                   <div>
                     <h2>Add Invoice</h2>
                     <form onSubmit={handleSubmitCupcake}>
@@ -2165,7 +1967,6 @@ const handleSubmitCupcake = (e) => {
             {isAddPayOpen && (
               <div className="overlay">
                 <div className="popup">
-                  {/* Your invoice input form here */}
                   <div>
                     <h2>Add Payment</h2>
                     <form onSubmit={handleAddPaySubmit}>
@@ -2286,7 +2087,7 @@ const handleSubmitCupcake = (e) => {
                   <h3>Customer Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {customer_forList.map((contact) => (
+                      {customer_forList.map((contact: any) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
@@ -2297,7 +2098,7 @@ const handleSubmitCupcake = (e) => {
                   <h3>Supplier Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {supplier_forList.map((contact) => (
+                      {supplier_forList.map((contact: any) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
@@ -2308,7 +2109,7 @@ const handleSubmitCupcake = (e) => {
                   <h3>Other Contacts</h3>
                   <div className="tags">
                     <ul>
-                      {other_forList.map((contact) => (
+                      {other_forList.map((contact: any) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
@@ -2320,7 +2121,7 @@ const handleSubmitCupcake = (e) => {
                   <h3>Both Supplier and Customer</h3>
                   <div className="tags">
                     <ul>
-                      {both_forList.map((contact) => (
+                      {both_forList.map((contact: any) => (
                         <li key={contact.id}>{contact.name}</li>
                       ))}
                     </ul>
