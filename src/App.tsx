@@ -276,7 +276,7 @@ const LineChart = ({ data }) => {
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login, set_login] = useState(false);
+  const [login, set_login] = useState(true);
   const [error, setError] = useState(false);
   
   const [jsonContact, setJsonContact] = useState<any>([]);
@@ -2035,7 +2035,7 @@ const handleSubmitCupcake = (e) => {
                   <div className="graph-div">
                     <LineChart   data={sortedGroupedInvoices} />
                     </div>
-                    <button className='add-button' onClick={openAddInvoice}>Add Cupcake Sale</button>
+                    <button className='add-button' onClick={openAddInvoice} disabled={true} title={'Disabled for web-use'}>Add cupcake sale</button>
                 </div>
                 
                 <div className="box">
@@ -2044,7 +2044,7 @@ const handleSubmitCupcake = (e) => {
                   <div className="graph-div">
                     <LineChart   data={sortedGroupedPayments} />
                   </div>
-                  <button className='add-button' onClick={handleAddPaymentClick}>Add payment</button>
+                  <button className='add-button' onClick={handleAddPaymentClick}disabled={true} title={'Disabled for web-use'}>Add payment</button>
                 </div>
               </div>
               <hr className="horiLine"></hr>
@@ -2076,12 +2076,12 @@ const handleSubmitCupcake = (e) => {
                 <OverDueList invoiceDictionary={overDueAccountsList} customerIds={overDueAccountsIds} />
               </div>
               <hr className="horiLine"></hr>  
-              <div><button className='add-button' onClick={handleAddItemClick}>Add Item</button></div>
+              <div><button className='add-button' onClick={handleAddItemClick}disabled={true} title={'Disabled for web-use'}>Add Item</button></div>
               <div className="boxContact">
               <ItemList itemDictionary={itemDictionary} itemIds={itemIds} />
               </div>
               <hr className="horiLine"></hr>
-              <div><button className='add-button'  onClick={handleAddContactClick}>Add Contact</button></div>            
+              <div><button className='add-button'  onClick={handleAddContactClick}disabled={true} title={'Disabled for web-use'}>Add Contact</button></div>            
               <div className="boxContact">
                 <div className="spacer">
                   <h3>Customer Contacts</h3>
